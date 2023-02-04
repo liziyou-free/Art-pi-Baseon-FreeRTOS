@@ -1,0 +1,15 @@
+MDK-ARM/ART-PI
+*.pyc
+*.map
+*.dblite
+*.elf
+*.bin
+*.hex
+*.axf
+*.pdb
+*.idb
+*.ilk
+*.old
+*.crf
+*.o
+*.d
