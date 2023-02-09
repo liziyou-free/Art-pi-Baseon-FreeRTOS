@@ -49,10 +49,10 @@
 #define LWIP_IGMP   1
 #define LWIP_ARP    1
 #define LWIP_AUTOIP 1
-#define MEM_SIZE    (1024*30)
-#define MEM_LIBC_MALLOC 1
-//#define MEMP_MEM_MALLOC 1
-//#define MEMP_MEM_INIT   1
+#define MEM_SIZE    (1024*64)
+//#define MEM_LIBC_MALLOC 1
+#define MEMP_MEM_MALLOC 1
+#define MEMP_MEM_INIT   1
 
 
 /* LwIP Stack Parameters (modified compared to initialization value in opt.h) -*/
@@ -66,7 +66,7 @@
 /*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
 #define MEM_ALIGNMENT 4
 /*----- Default Value for H7 devices: 0x30044000 -----*/
-#define LWIP_RAM_HEAP_POINTER 0x30020000
+#define LWIP_RAM_HEAP_POINTER 0x30004000
 /*----- Value supported for H7 devices: 1 -----*/
 //#define LWIP_SUPPORT_CUSTOM_PBUF 1
 /*----- Value in opt.h for LWIP_ETHERNET: LWIP_ARP || PPPOE_SUPPORT -*/
@@ -86,7 +86,7 @@
 /*----- Value in opt.h for TCPIP_THREAD_STACKSIZE: 0 -----*/
 #define TCPIP_THREAD_STACKSIZE 2048
 /*----- Value in opt.h for TCPIP_THREAD_PRIO: 1 -----*/
-#define TCPIP_THREAD_PRIO 4
+#define TCPIP_THREAD_PRIO 48 // osPriorityRealtime
 /*----- Value in opt.h for TCPIP_MBOX_SIZE: 0 -----*/
 #define TCPIP_MBOX_SIZE 6
 /*----- Value in opt.h for SLIPIF_THREAD_STACKSIZE: 0 -----*/
