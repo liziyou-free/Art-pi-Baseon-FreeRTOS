@@ -22,14 +22,14 @@
 #include "lwip.h"
 #include "lwip/init.h"
 #include "lwip/netif.h"
-#if defined ( __CC_ARM )  /* MDK ARM Compiler */
+//#if defined ( __CC_ARM )  /* MDK ARM Compiler */
 #include "lwip/sio.h"
-#endif /* MDK ARM Compiler */
+//#endif /* MDK ARM Compiler */
 #include "ethernetif.h"
 #include <string.h>
 
 /* USER CODE BEGIN 0 */
-
+uint32_t lwip_heap[MEM_SIZE/4] __attribute__((section("LWIP_HEAP")));
 /* USER CODE END 0 */
 /* Private function prototypes -----------------------------------------------*/
 static void ethernet_link_status_updated(struct netif *netif);
@@ -148,7 +148,7 @@ static void ethernet_link_status_updated(struct netif *netif)
   }
 }
 
-#if defined ( __CC_ARM )  /* MDK ARM Compiler */
+//#if defined ( __CC_ARM )  /* MDK ARM Compiler */
 /**
  * Opens a serial device for communication.
  *
@@ -219,5 +219,5 @@ u32_t sio_tryread(sio_fd_t fd, u8_t *data, u32_t len)
 /* USER CODE END 10 */
   return recved_bytes;
 }
-#endif /* MDK ARM Compiler */
+//#endif /* MDK ARM Compiler */
 
