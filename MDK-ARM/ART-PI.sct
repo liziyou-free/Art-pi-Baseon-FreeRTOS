@@ -22,4 +22,10 @@ LR_IROM1 0x08000000 0x00200000  {    ; load region size_region
   RW_LWIP_HEAP 0x30040000 0x00008000  {   ; 32KB
    *(LWIP_HEAP)
   }
+  ;RW_EX_SDRAM0  0xC0000000 UNINIT 0x01000000  {   ; 16MB SDRAMÇ°16MB
+  ; *(sdram0)
+  ;}
+  ;RW_EX_SDRAM1  0xC1000000 0x01000000  {   ; 16MB SDRAMºó16MB
+  ;
+  ;}
 }
