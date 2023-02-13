@@ -62,12 +62,13 @@ void defualt_thread_entry(void){
     
     
     sdram_speed_test();
+    lwiperf_example_init();
 }
 
 
 uint32_t *test_buffer = (uint32_t *)0xC0000000;   //[(1024*1024*16)/4] __attribute__((section("sdram0")));
 
-static int start_time = 0, end_time = 0, final_value = 0;
+static volatile int start_time = 0, end_time = 0, final_value = 0;
 
 void sdram_speed_test() {
     

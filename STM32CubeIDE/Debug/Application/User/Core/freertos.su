@@ -1,0 +1,7 @@
+D:/ART-PI/Core/Src/freertos.c:76:6:vApplicationIdleHook	4	static
+D:/ART-PI/Core/Src/freertos.c:91:6:vApplicationTickHook	4	static
+D:/ART-PI/Core/Src/freertos.c:102:6:vApplicationStackOverflowHook	16	static
+D:/ART-PI/Core/Src/freertos.c:111:6:vApplicationMallocFailedHook	4	static
+D:/ART-PI/Core/Src/freertos.c:127:6:vApplicationDaemonTaskStartupHook	4	static
+D:/ART-PI/Core/Src/freertos.c:137:6:MX_FREERTOS_Init	8	static
+D:/ART-PI/Core/Src/freertos.c:179:6:StartDefaultTask	16	static

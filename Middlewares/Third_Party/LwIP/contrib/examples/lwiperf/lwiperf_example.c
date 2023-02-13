@@ -47,9 +47,9 @@ lwiperf_report(void *arg, enum lwiperf_report_type report_type,
 void
 lwiperf_example_init(void)
 {
-    const ip_addr_t remote_ip = {
-      .addr = inet_addr("192.168.0.198")
-    };
+//    const ip_addr_t remote_ip = {
+//      .addr = inet_addr("192.168.0.198")
+//    };
   lwiperf_start_tcp_server_default(lwiperf_report, NULL);
 //  lwiperf_start_tcp_client_default(&remote_ip, lwiperf_report, NULL);
 }
