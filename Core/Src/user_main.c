@@ -32,38 +32,41 @@ osThreadId_t netTaskHandle;
 const osThreadAttr_t netTask_attributes = {
   .name = "netTask",
   .stack_size = 1280 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityRealtime3,
 };
-uint8_t buffer[1024*100];
-
-
 
 
 /*************************** User Code Area ***************************/
 
+int Device_Id = 0;
 
-void components_init(void) {
+void thread_init(void) {
     
     netTaskHandle = osThreadNew(Net_Task_BaseOn_FreeRTOS, NULL, &netTask_attributes);
     if (!netTaskHandle) {
-        goto err;
+        while(1);
     }
     return;
-  err:
-    for(;;)
-    {
-        osDelay(1);
-    }
-    
 }
 
+
+extern SoftWareI2cStruct Ov2640_Instance;
 
 void defualt_thread_entry(void){
+
+//    sdram_speed_test();
+//    lwiperf_example_init();
     
+    Device_Id = ov2640_ReadID(&Ov2640_Instance);
+    ov2640_Config(&Ov2640_Instance, 1, 1, 1);
+    ov2640_Init(&Ov2640_Instance, CAMERA_R320x240);
     
-    sdram_speed_test();
-    lwiperf_example_init();
+    HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, 0xC1000000, 320*240*2);
+    while(1) {
+        osDelay(100);
+    }
 }
+
 
 
 uint32_t *test_buffer = (uint32_t *)0xC0000000;   //[(1024*1024*16)/4] __attribute__((section("sdram0")));
@@ -90,7 +93,7 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
     memset(&dst_ip,0,sizeof(struct sockaddr_in));
     while(!netif_is_link_up(&gnetif))
     {
-        osDelay(100);
+        osDelay(20);
     }
     sct = socket(AF_INET,SOCK_STREAM,0);
     if(sct<0){    
@@ -99,7 +102,7 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
     
     dst_ip.sin_port = htons(6666);
     dst_ip.sin_family = AF_INET;
-    dst_ip.sin_addr.s_addr = inet_addr("192.168.0.198");
+    dst_ip.sin_addr.s_addr = inet_addr("192.168.0.197");
     
     res = connect(sct,(struct sockaddr*)&dst_ip, sizeof(struct sockaddr_in));
     if(res<0){

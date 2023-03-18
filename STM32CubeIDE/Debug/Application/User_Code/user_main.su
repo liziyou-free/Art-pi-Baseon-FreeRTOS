@@ -1,5 +1,5 @@
+D:/ART-PI/Core/Src/user_main.c:83:6:Net_Task_BaseOn_FreeRTOS	32	static
 D:/ART-PI/Core/Src/user_main.c:45:6:components_init	8	static
-D:/ART-PI/Core/Src/user_main.c:61:6:defualt_thread_entry	8	static
 D:/ART-PI/Core/Src/user_main.c:73:6:sdram_speed_test	8	static
-D:/ART-PI/Core/Src/user_main.c:83:6:Net_Task_BaseOn_FreeRTOS	40	static
+D:/ART-PI/Core/Src/user_main.c:61:6:defualt_thread_entry	8	static
 D:/ART-PI/Core/Src/user_main.c:121:6:MPU_Config	24	static

@@ -15,8 +15,10 @@
 #include "sockets.h"
 #include <stdint.h>
 #include "ff.h"
-
+#include "gpioi2c.h"
+#include "ov2640.h"
+#include "dcmi.h"
 
 void MPU_Config( void );
-void components_init(void);
+void thread_init(void);
 void defualt_thread_entry(void);

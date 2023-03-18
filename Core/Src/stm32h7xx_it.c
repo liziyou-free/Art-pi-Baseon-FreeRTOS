@@ -160,9 +160,9 @@ void DebugMon_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+    HAL_IncTick();
   /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
+  
 #if (INCLUDE_xTaskGetSchedulerState == 1 )
   if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
   {

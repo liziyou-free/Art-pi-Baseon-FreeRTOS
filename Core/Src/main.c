@@ -19,8 +19,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "dcmi.h"
 #include "fatfs.h"
 #include "lwip.h"
+#include "quadspi.h"
 #include "sdmmc.h"
 #include "gpio.h"
 #include "fmc.h"
@@ -28,9 +30,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "./user_main.h"
-#include "sockets.h"
-#include <stdint.h>
-#include "ff.h"
+#include "w25qxx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,9 +104,14 @@ int main(void)
   MX_GPIO_Init();
   MX_SDMMC1_SD_Init();
   MX_FATFS_Init();
+  MX_QUADSPI_Init();
   MX_FMC_Init();
+  MX_DCMI_Init();
   /* USER CODE BEGIN 2 */
-  components_init();
+
+//  W25QXX_Init();
+//  W25Q_Memory_Mapped_Enable();
+//    thread_init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -122,7 +127,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    osDelay(100);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
