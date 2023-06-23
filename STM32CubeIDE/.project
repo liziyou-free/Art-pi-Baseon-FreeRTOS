@@ -37,6 +37,31 @@
 			<locationURI>PARENT-1-PROJECT_LOC/ART-PI.ioc</locationURI>
 		</link>
 		<link>
+			<name>CommonDriver/camera_ov7725.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/CommonDriver/camera_ov7725.c</locationURI>
+		</link>
+		<link>
+			<name>CommonDriver/gpioi2c.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/CommonDriver/gpioi2c.c</locationURI>
+		</link>
+		<link>
+			<name>CommonDriver/ov2640.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/CommonDriver/ov2640.c</locationURI>
+		</link>
+		<link>
+			<name>CommonDriver/ov5640.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/CommonDriver/ov5640.c</locationURI>
+		</link>
+		<link>
+			<name>CommonDriver/ov5640_reg.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/CommonDriver/ov5640_reg.c</locationURI>
+		</link>
+		<link>
 			<name>Application/User_Code/user_main.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/user_main.c</locationURI>
@@ -720,6 +745,11 @@
 			<name>Application/User/Core/stm32h7xx_hal_msp.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32h7xx_hal_msp.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/stm32h7xx_hal_timebase_tim.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32h7xx_hal_timebase_tim.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/stm32h7xx_it.c</name>

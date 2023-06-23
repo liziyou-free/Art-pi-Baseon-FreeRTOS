@@ -25,35 +25,35 @@
 
 static void sdram_config (SDRAM_HandleTypeDef *SdramHandle){
   FMC_SDRAM_CommandTypeDef  SdramTypdef={0};
-  /*        Ê¹ÄÜÊ±ÖÓ        */
+  /*        Ê¹ï¿½ï¿½Ê±ï¿½ï¿½        */
   SdramTypdef.CommandMode= FMC_SDRAM_CMD_CLK_ENABLE;
   SdramTypdef.AutoRefreshNumber= 1;
   SdramTypdef.CommandTarget= FMC_SDRAM_CMD_TARGET_BANK1;
   SdramTypdef.ModeRegisterDefinition= 0;
   HAL_SDRAM_SendCommand(SdramHandle,&SdramTypdef,50);
   
-  /*        ÉÏµçÑÓÊ±200US       */
+  /*200US       */
   uint16_t delay_200us;
-  while(++delay_200us); //ÑÓ³Ù
+  while(++delay_200us); //ï¿½Ó³ï¿½
   
-  /*        È«²¿³äµç        */
+  /*        È«ï¿½ï¿½ï¿½ï¿½ï¿?        */
   SdramTypdef.CommandMode= FMC_SDRAM_CMD_PALL;
   SdramTypdef.AutoRefreshNumber= 1;
   SdramTypdef.CommandTarget= FMC_SDRAM_CMD_TARGET_BANK1;
   SdramTypdef.ModeRegisterDefinition= 0;
   HAL_SDRAM_SendCommand(SdramHandle,&SdramTypdef,50);
   
-  /*        ÉèÖÃ×ÔË¢ÐÂ´ÎÊý     */
+  /*        ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¢ï¿½Â´ï¿½ï¿½ï¿½     */
   HAL_SDRAM_SetAutoRefreshNumber(SdramHandle,8);
   
-  /*        ÉèÖÃÄ£Ê½        */
+  /*        ï¿½ï¿½ï¿½ï¿½Ä£Ê½        */
   SdramTypdef.CommandMode= FMC_SDRAM_CMD_LOAD_MODE;
   SdramTypdef.AutoRefreshNumber= 1;
   SdramTypdef.CommandTarget= FMC_SDRAM_CMD_TARGET_BANK1;
   SdramTypdef.ModeRegisterDefinition= 0x01|0x02<<4|1<<9;
   HAL_SDRAM_SendCommand(SdramHandle,&SdramTypdef,50);
   
-  /*        ÉèÖÃË¢ÐÂÂÊ       */
+  /*        ï¿½ï¿½ï¿½ï¿½Ë¢ï¿½ï¿½ï¿½ï¿½       */
   HAL_SDRAM_ProgramRefreshRate(SdramHandle,677);
 }
 

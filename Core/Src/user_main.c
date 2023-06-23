@@ -57,11 +57,11 @@ void defualt_thread_entry(void){
 //    sdram_speed_test();
 //    lwiperf_example_init();
     
-    Device_Id = ov2640_ReadID(&Ov2640_Instance);
-    ov2640_Config(&Ov2640_Instance, 1, 1, 1);
-    ov2640_Init(&Ov2640_Instance, CAMERA_R320x240);
-    
-    HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, 0xC1000000, 320*240*2);
+//    Device_Id = ov2640_ReadID(&Ov2640_Instance);
+//    ov2640_Config(&Ov2640_Instance, 1, 1, 1);
+//    ov2640_Init(&Ov2640_Instance, CAMERA_R320x240);
+//
+//    HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, 0xC1000000, 320*240*2);
     while(1) {
         osDelay(100);
     }
