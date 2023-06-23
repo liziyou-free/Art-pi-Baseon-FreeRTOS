@@ -1,4 +1,5 @@
 MDK-ARM/ART-PI
+STM32CubeIDE/Debug
 *.pyc
 *.map
 *.dblite

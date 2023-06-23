@@ -1,3 +1,0 @@
-D:/ART-PI/Core/Src/fmc.c:65:6:MX_FMC_Init	64	static
-D:/ART-PI/Core/Src/fmc.c:248:6:HAL_SDRAM_MspInit	240	static
-D:/ART-PI/Core/Src/fmc.c:336:6:HAL_SDRAM_MspDeInit	8	static
