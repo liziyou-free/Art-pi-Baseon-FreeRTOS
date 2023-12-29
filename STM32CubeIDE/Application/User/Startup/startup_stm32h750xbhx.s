@@ -750,3 +750,17 @@ g_pfnVectors:
    .thumb_set WAKEUP_PIN_IRQHandler,Default_Handler
 
 
+
+   .section .ex_flash,"a"
+   .type   flash_data, %object
+   .global flash_data
+   .size   flash_data, .-flash_data
+flash_data:
+   .byte 1,2,3,4,5,6,7,8,9,0
+
+
+
+
+
+
+

@@ -43,27 +43,18 @@ _Min_Stack_Size = 0x800 ; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-  /* FLASH (rx)     : ORIGIN = 0x90000000, LENGTH = 8M */
-  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 128K       
+  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 128K
+  EX_FLASH (rx)  : ORIGIN = 0x90000000, LENGTH = 8M 
   DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
   RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
   RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
   RAM_D3 (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
   ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 64K
-  ONCHIP_FLASH   : ORIGIN = 0x08000000, LENGTH = 128K  /* 128K */  
 }
 
 /* Define output sections */
 SECTIONS
 {
-  /* The startup code goes first into FLASH */
-  .onchip_flash :
-  {
-    . = ALIGN(4);
-    
-    . = ALIGN(4);
-  } >ONCHIP_FLASH
-  
   /* The startup code goes first into FLASH */
   .isr_vector :
   {
@@ -180,6 +171,12 @@ SECTIONS
     libgcc.a ( * )
   }
 
+  .extern_flash :
+  {
+     KEEP(*(.ex_flash))
+     
+  } >EX_FLASH
+  
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
 
