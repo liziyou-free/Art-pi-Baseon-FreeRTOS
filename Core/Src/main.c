@@ -75,6 +75,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
   MPU_Config();
   /* USER CODE END 1 */
+/* Enable the CPU Cache */
 
   /* Enable I-Cache---------------------------------------------------------*/
   SCB_EnableICache();
@@ -105,7 +106,7 @@ int main(void)
 //  MX_SDMMC1_SD_Init();
 //  MX_FATFS_Init();
   MX_QUADSPI_Init();
-  MX_FMC_Init();
+//  MX_FMC_Init();
 //  MX_DCMI_Init();
   /* USER CODE BEGIN 2 */
 
@@ -115,7 +116,9 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  osKernelInitialize();
+
+  /* Call init function for freertos objects (in freertos.c) */
 //  MX_FREERTOS_Init();
 
   /* Start scheduler */
@@ -156,10 +159,6 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
-
-  /** Macro to configure the PLL clock source
-  */
-  __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSE);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.

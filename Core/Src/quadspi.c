@@ -27,34 +27,34 @@
 QSPI_HandleTypeDef hqspi;
 
 /* QUADSPI init function */
-void MX_QUADSPI_Init(void)
-{
-
-  /* USER CODE BEGIN QUADSPI_Init 0 */
-
-  /* USER CODE END QUADSPI_Init 0 */
-
-  /* USER CODE BEGIN QUADSPI_Init 1 */
-
-  /* USER CODE END QUADSPI_Init 1 */
-  hqspi.Instance = QUADSPI;
-  hqspi.Init.ClockPrescaler = 2;
-  hqspi.Init.FifoThreshold = 32;
-  hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
-  hqspi.Init.FlashSize = 8;
-  hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_2_CYCLE;
-  hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
-  hqspi.Init.FlashID = QSPI_FLASH_ID_1;
-  hqspi.Init.DualFlash = QSPI_DUALFLASH_DISABLE;
-  if (HAL_QSPI_Init(&hqspi) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN QUADSPI_Init 2 */
-
-  /* USER CODE END QUADSPI_Init 2 */
-
-}
+//void MX_QUADSPI_Init(void)
+//{
+//
+//  /* USER CODE BEGIN QUADSPI_Init 0 */
+//
+//  /* USER CODE END QUADSPI_Init 0 */
+//
+//  /* USER CODE BEGIN QUADSPI_Init 1 */
+//
+//  /* USER CODE END QUADSPI_Init 1 */
+//  hqspi.Instance = QUADSPI;
+//  hqspi.Init.ClockPrescaler = 2;
+//  hqspi.Init.FifoThreshold = 32;
+//  hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
+//  hqspi.Init.FlashSize = 8;
+//  hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_2_CYCLE;
+//  hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
+//  hqspi.Init.FlashID = QSPI_FLASH_ID_1;
+//  hqspi.Init.DualFlash = QSPI_DUALFLASH_DISABLE;
+//  if (HAL_QSPI_Init(&hqspi) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+//  /* USER CODE BEGIN QUADSPI_Init 2 */
+//
+//  /* USER CODE END QUADSPI_Init 2 */
+//
+//}
 
 void HAL_QSPI_MspInit(QSPI_HandleTypeDef* qspiHandle)
 {

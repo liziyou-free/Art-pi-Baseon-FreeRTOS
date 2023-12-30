@@ -6,7 +6,7 @@
 **  Author      : STM32CubeIDE
 **
 **  Abstract    : Linker script for STM32H7 series
-**                1024Kbytes RAM_EXEC and 544Kbytes RAM
+**                128Kbytes RAM_EXEC and 544Kbytes RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -21,7 +21,7 @@
 *****************************************************************************
 ** @attention
 **
-** Copyright (c) 2023 STMicroelectronics.
+** Copyright (c) 2022 STMicroelectronics.
 ** All rights reserved.
 **
 ** This software is licensed under terms that can be found in the LICENSE file
@@ -37,13 +37,13 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = ORIGIN(DTCMRAM) + LENGTH(DTCMRAM);    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x800;      /* required amount of heap  */
-_Min_Stack_Size = 0x800; /* required amount of stack */
+_Min_Heap_Size = 0x800 ;      /* required amount of heap  */
+_Min_Stack_Size = 0x800 ; /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
 {
-  RAM_EXEC (xrw)  : ORIGIN = 0x24000000, LENGTH = 1024K
+  RAM_EXEC (xrw)  : ORIGIN = 0x24000000, LENGTH = 128K
   DTCMRAM (xrw)   : ORIGIN = 0x20000000, LENGTH = 128K
   RAM_D2 (xrw)    : ORIGIN = 0x30000000, LENGTH = 288K
   RAM_D3 (xrw)    : ORIGIN = 0x38000000, LENGTH = 64K

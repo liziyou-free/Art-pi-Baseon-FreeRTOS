@@ -21,7 +21,7 @@
 *****************************************************************************
 ** @attention
 **
-** Copyright (c) 2023 STMicroelectronics.
+** Copyright (c) 2022 STMicroelectronics.
 ** All rights reserved.
 **
 ** This software is licensed under terms that can be found in the LICENSE file
@@ -37,13 +37,14 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x800;      /* required amount of heap  */
-_Min_Stack_Size = 0x800; /* required amount of stack */
+_Min_Heap_Size = 0x800 ;      /* required amount of heap  */
+_Min_Stack_Size = 0x800 ; /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
 {
   FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 128K
+  EX_FLASH (rx)  : ORIGIN = 0x90000000, LENGTH = 8M 
   DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
   RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
   RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
@@ -170,6 +171,12 @@ SECTIONS
     libgcc.a ( * )
   }
 
+  .extern_flash :
+  {
+     KEEP(*(.ex_flash))
+     
+  } >EX_FLASH
+  
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
 

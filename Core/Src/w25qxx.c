@@ -25,22 +25,22 @@ uint16_t w25qxx_mid = W25Q128;
 /*----------------------------------------------------------------------------*/
 extern QSPI_HandleTypeDef hqspi;
 
-//void MX_QUADSPI_Init(void)
-//{
-//    hqspi.Instance            = QUADSPI;
-//    hqspi.Init.ClockPrescaler = 1;
-//    hqspi.Init.FifoThreshold  = 8;
-//    hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
-//    hqspi.Init.FlashSize      = POSITION_VAL(0X1000000)-1;
-//    hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_5_CYCLE;
-//    hqspi.Init.ClockMode      = QSPI_CLOCK_MODE_0;
-//    hqspi.Init.FlashID        = QSPI_FLASH_ID_1;
-//    hqspi.Init.DualFlash      = QSPI_DUALFLASH_DISABLE;
-//    if (HAL_QSPI_Init(&hqspi) != HAL_OK)
-//    {
-//
-//    }
-//}
+void MX_QUADSPI_Init(void)
+{
+    hqspi.Instance            = QUADSPI;
+    hqspi.Init.ClockPrescaler = 1;
+    hqspi.Init.FifoThreshold  = 8;
+    hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
+    hqspi.Init.FlashSize      = POSITION_VAL(0X1000000)-1;
+    hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_5_CYCLE;
+    hqspi.Init.ClockMode      = QSPI_CLOCK_MODE_0;
+    hqspi.Init.FlashID        = QSPI_FLASH_ID_1;
+    hqspi.Init.DualFlash      = QSPI_DUALFLASH_DISABLE;
+    if (HAL_QSPI_Init(&hqspi) != HAL_OK)
+    {
+
+    }
+}
 
 void W25QXX_Init(void)
 {
