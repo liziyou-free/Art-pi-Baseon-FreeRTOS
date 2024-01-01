@@ -50,10 +50,11 @@ void thread_init(void) {
 }
 
 
-extern SoftWareI2cStruct Ov2640_Instance;
+
 
 void defualt_thread_entry(void){
 
+	extern SoftWareI2cStruct Ov2640_Instance;
 //    sdram_speed_test();
 //    lwiperf_example_init();
     
@@ -87,8 +88,24 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
     
     int sct = 0; 
     static int res = 0;
-    char *dtr = "Hello,word!@FreedomLi";
+    char *dtr = "Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+    		    "Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
+				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;\r\n";
+
     struct sockaddr_in dst_ip ;
+
+    sdram_speed_test();
+
   retry:
     memset(&dst_ip,0,sizeof(struct sockaddr_in));
     while(!netif_is_link_up(&gnetif))
@@ -102,7 +119,7 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
     
     dst_ip.sin_port = htons(6666);
     dst_ip.sin_family = AF_INET;
-    dst_ip.sin_addr.s_addr = inet_addr("192.168.0.197");
+    dst_ip.sin_addr.s_addr = inet_addr("192.168.0.198");
     
     res = connect(sct,(struct sockaddr*)&dst_ip, sizeof(struct sockaddr_in));
     if(res<0){
@@ -116,7 +133,7 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
             closesocket(sct);
             goto retry;
         }
-        osDelay(20);
+        osDelay(5);
     }
 }
 
@@ -132,8 +149,8 @@ void MPU_Config( void )
   MPU_InitStruct.BaseAddress      = 0x24000000;
   MPU_InitStruct.Size             = MPU_REGION_SIZE_512KB;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-  MPU_InitStruct.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
-  MPU_InitStruct.IsCacheable      = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsBufferable     = MPU_ACCESS_BUFFERABLE;
+  MPU_InitStruct.IsCacheable      = MPU_ACCESS_CACHEABLE;
   MPU_InitStruct.IsShareable      = MPU_ACCESS_SHAREABLE;
   MPU_InitStruct.Number           = MPU_REGION_NUMBER0;
   MPU_InitStruct.TypeExtField     = MPU_TEX_LEVEL1;
@@ -180,6 +197,36 @@ void MPU_Config( void )
   MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
   MPU_InitStruct.Number = MPU_REGION_NUMBER3;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.SubRegionDisable = 0x00;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* SDRAM */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.BaseAddress = 0xC0000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER4;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.SubRegionDisable = 0x00;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* QSPI-FLASH */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.BaseAddress = 0x90000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_16MB;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER5;
   MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
   MPU_InitStruct.SubRegionDisable = 0x00;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;

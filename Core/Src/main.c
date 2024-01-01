@@ -103,23 +103,24 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-//  MX_SDMMC1_SD_Init();
+  MX_SDMMC1_SD_Init();
 //  MX_FATFS_Init();
   MX_QUADSPI_Init();
-//  MX_FMC_Init();
-//  MX_DCMI_Init();
-  /* USER CODE BEGIN 2 */
+  MX_FMC_Init();
+  MX_DCMI_Init();
 
+  /* USER CODE BEGIN 2 */
   W25QXX_Init();
   W25Q_Memory_Mapped_Enable();
-//  thread_init();
+  MX_FATFS_Init();
+  thread_init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();
 
   /* Call init function for freertos objects (in freertos.c) */
-//  MX_FREERTOS_Init();
+  MX_FREERTOS_Init();
 
   /* Start scheduler */
   osKernelStart();
@@ -130,7 +131,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    for (;;);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

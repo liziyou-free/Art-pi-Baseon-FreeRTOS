@@ -67,8 +67,10 @@ SECTIONS
   .text :
   {
     . = ALIGN(4);
-    *(.text)           /* .text sections (code) */
-    *(.text*)          /* .text* sections (code) */
+    ./Core/*(.text)
+    ./Core/*(.text*)
+    ./Drivers/*(.text*)
+    ./Drivers/*(.text*)
     *(.glue_7)         /* glue arm to thumb code */
     *(.glue_7t)        /* glue thumb to arm code */
     *(.eh_frame)
@@ -163,21 +165,37 @@ SECTIONS
     . = ALIGN(8);
   } >RAM_D1
 
+  
+  .ethernet_descriptor : {
+    
+    *(.RxDecripSection)
+    *(.TxDecripSection)
+  } >RAM_D2
+  
+  
   /* Remove information from the standard libraries */
-  /DISCARD/ :
+  /* /DISCARD/ : */
+  .libxxx :
   {
-    libc.a ( * )
-    libm.a ( * )
-    libgcc.a ( * )
-  }
+    *libc.a:*(.text .text.*)
+    *libm.a:*(.text .text.*)
+    *libgcc.a:*(.text .text.*)
+    /*
+      libc.a(*.text)
+      libm.a(*.text)
+      libgcc.a(*.text)
+    */
+  } >FLASH
 
   .extern_flash :
   {
+     . = ALIGN(4);
+     *(.text)
+     *(.text*)
      KEEP(*(.ex_flash))
-     
   } >EX_FLASH
   
-  .ARM.attributes 0 : { *(.ARM.attributes) }
+  .ARM.attributes 0 : { *(.ARM.attributes) } >FLASH
 }
 
 
