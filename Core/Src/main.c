@@ -20,7 +20,10 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "dcmi.h"
+#include "dma2d.h"
 #include "fatfs.h"
+#include "i2c.h"
+#include "ltdc.h"
 #include "lwip.h"
 #include "quadspi.h"
 #include "sdmmc.h"
@@ -108,8 +111,11 @@ int main(void)
   MX_QUADSPI_Init();
   MX_FMC_Init();
   MX_DCMI_Init();
-
+  MX_DMA2D_Init();
+  MX_LTDC_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  hardware_reset();
   W25QXX_Init();
   W25Q_Memory_Mapped_Enable();
   MX_FATFS_Init();
@@ -131,7 +137,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    for (;;);
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

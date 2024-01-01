@@ -31,11 +31,11 @@ QSPI_HandleTypeDef hqspi;
 //{
 //
 //  /* USER CODE BEGIN QUADSPI_Init 0 */
-//
+////////
 //  /* USER CODE END QUADSPI_Init 0 */
 //
 //  /* USER CODE BEGIN QUADSPI_Init 1 */
-//
+////////
 //  /* USER CODE END QUADSPI_Init 1 */
 //  hqspi.Instance = QUADSPI;
 //  hqspi.Init.ClockPrescaler = 2;
@@ -51,7 +51,7 @@ QSPI_HandleTypeDef hqspi;
 //    Error_Handler();
 //  }
 //  /* USER CODE BEGIN QUADSPI_Init 2 */
-//
+////////
 //  /* USER CODE END QUADSPI_Init 2 */
 //
 //}
