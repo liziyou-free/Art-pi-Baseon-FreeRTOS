@@ -19,18 +19,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "dcmi.h"
+#include "dma2d.h"
 #include "fatfs.h"
+#include "i2c.h"
+#include "ltdc.h"
 #include "lwip.h"
+#include "quadspi.h"
 #include "sdmmc.h"
 #include "gpio.h"
 #include "fmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "./user_main.h"
-#include "sockets.h"
-#include <stdint.h>
-#include "ff.h"
+#include "../Application/user_main.h"
+#include "w25qxx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -75,6 +78,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
   MPU_Config();
   /* USER CODE END 1 */
+/* Enable the CPU Cache */
 
   /* Enable I-Cache---------------------------------------------------------*/
   SCB_EnableICache();
@@ -103,14 +107,26 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SDMMC1_SD_Init();
-  MX_FATFS_Init();
+//  MX_FATFS_Init();
+  MX_QUADSPI_Init();
   MX_FMC_Init();
+  MX_DCMI_Init();
+  MX_DMA2D_Init();
+  MX_LTDC_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  components_init();
+  hardware_reset();
+  W25QXX_Init();
+  W25Q_Memory_Mapped_Enable();
+  rodata_copy_to_ram();
+  MX_FATFS_Init();
+  thread_init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  osKernelInitialize();
+
+  /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 
   /* Start scheduler */
@@ -122,7 +138,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    osDelay(20);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -151,10 +167,6 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
-
-  /** Macro to configure the PLL clock source
-  */
-  __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSE);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -198,6 +210,27 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM4 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM4) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

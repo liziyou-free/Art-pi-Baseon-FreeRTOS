@@ -57,6 +57,18 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define GPIO_SD_DETECT_Pin GPIO_PIN_5
+#define GPIO_SD_DETECT_GPIO_Port GPIOD
+#define GPIO_LCD_BLACKLIGHT_Pin GPIO_PIN_4
+#define GPIO_LCD_BLACKLIGHT_GPIO_Port GPIOD
+#define GPIO_TOUCHSCREEN_RST_Pin GPIO_PIN_3
+#define GPIO_TOUCHSCREEN_RST_GPIO_Port GPIOD
+#define GPIO_TOUCHSCREEN_INT_Pin GPIO_PIN_12
+#define GPIO_TOUCHSCREEN_INT_GPIO_Port GPIOG
+#define GPIO_TOUCHSCREEN_INT_EXTI_IRQn EXTI15_10_IRQn
+#define GPIO_ETH_PHY_RST_Pin GPIO_PIN_3
+#define GPIO_ETH_PHY_RST_GPIO_Port GPIOA
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
