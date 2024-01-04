@@ -36,9 +36,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <rt_sys.h>
+//#include <rt_sys.h>
  
-#include "RTE_Components.h"
+//#include "RTE_Components.h"
  
 #ifdef RTE_Compiler_IO_STDOUT_EVR
 #include "EventRecorder.h"
@@ -354,7 +354,7 @@ const char __stderr_name[] = ":STDERR";
   \param[in] name     File name
   \param[in] openmode Mode specification bitmap
  
-  \return    The return value is –1 if an error occurs.
+  \return    The return value is ï¿½1 if an error occurs.
 */
 #ifdef RETARGET_SYS
 __attribute__((weak))

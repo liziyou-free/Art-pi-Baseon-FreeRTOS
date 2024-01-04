@@ -29,12 +29,13 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
-
+#include "core_cm7.h"
 
 /* Variables */
 extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
 
+extern UART_HandleTypeDef huart4;
 
 char *__env[1] = { 0 };
 char **environ = __env;
@@ -71,7 +72,8 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
 
   for (DataIdx = 0; DataIdx < len; DataIdx++)
   {
-    *ptr++ = __io_getchar();
+//    *ptr++ = __io_getchar();
+//      *ptr++ = ITM_ReceiveChar();
   }
 
   return len;
@@ -82,10 +84,12 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
   (void)file;
   int DataIdx;
 
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
-  {
-    __io_putchar(*ptr++);
-  }
+//  for (DataIdx = 0; DataIdx < len; DataIdx++)
+//  {
+////    __io_putchar(*ptr++);
+////      ITM_SendChar(*ptr++);
+//  }
+  HAL_UART_Transmit(&huart4, (const uint8_t *)ptr, len, 100);
   return len;
 }
 

@@ -29,7 +29,7 @@ osThreadId_t LvglTaskHandle;
 const osThreadAttr_t netTask_attributes = {
   .name = "netTask",
   .stack_size = 1280 * 4,
-  .priority = (osPriority_t) osPriorityNormal3,
+  .priority = (osPriority_t) osPriorityRealtime7,
 };
 
 const osThreadAttr_t LvglTask_attributes = {
@@ -62,6 +62,8 @@ void thread_init(void) {
 
 void lvgl_task(void *arg)
 {
+    sdram_speed_test();
+    cormark_main();
 	lv_init();
 	lvgl_adapter_layer_init();
 	lv_demo_benchmark();
@@ -69,7 +71,7 @@ void lvgl_task(void *arg)
 	for (;;)
 	{
 		lv_timer_handler();
-		osDelay(5);
+		osDelay(1);
 	}
 }
 
@@ -86,7 +88,9 @@ void sdram_speed_test()
     memset(test_buffer, 0xA5A5, 1024*1024*32);
     end_time = HAL_GetTick();
     final_value = end_time - start_time;
-//    printf("time :%d", final_value);
+    printf("********************************\r\n");
+    printf("* SDRAM Write Speed:%3.2fMB/s *\r\n", 32.0 / (final_value / 1000.0));
+    printf("********************************\r\n");
     return;
 }
 
@@ -95,10 +99,10 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
     
     int sct = 0; 
     static int res = 0;
-    char *dtr ="Hello,word!\r\n";
     struct sockaddr_in dst_ip ;
 
-    sdram_speed_test();
+    lwiperf_example_init();
+
   retry:
     memset(&dst_ip,0,sizeof(struct sockaddr_in));
     while(!netif_is_link_up(&gnetif))
@@ -120,7 +124,7 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
         goto retry;
     }
     while (1) {
-        res = write(sct, dtr, strlen(dtr));
+        res = write(sct, (void *)0xC0000000, 10240);
         if (res == -1) {
             closesocket(sct);
             goto retry;
@@ -230,19 +234,19 @@ void MPU_Config(void)
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
   /* SDRAM */
-//  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-//  MPU_InitStruct.BaseAddress = 0xC0000000;
-//  MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
-//  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-//  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
-//  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
-//  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
-//  MPU_InitStruct.Number = MPU_REGION_NUMBER4;
-//  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
-//  MPU_InitStruct.SubRegionDisable = 0x00;
-//  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
-//
-//  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.BaseAddress = 0xC0000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER4;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.SubRegionDisable = 0x00;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
   /* QSPI-FLASH */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;

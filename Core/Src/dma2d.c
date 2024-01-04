@@ -111,8 +111,8 @@ void DMA2D_Copy(void * pSrc,
 				uint32_t OffLineDst,
 				uint32_t PixelFormat)
 {
-	/* DMA2D 采用存储器到存储器模式, 这种模式是前景层作为 DMA2D 输入 */
-	DMA2D->CR = 0x00000000UL | (1 << 9);   //开启传输完成中断
+	/* DMA2D 采用存储器到存储器模�?, 这种模式是前景层作为 DMA2D 输入 */
+	DMA2D->CR = 0x00000000UL | (1 << 9);   //�?启传输完成中�?
 	DMA2D->FGMAR = (uint32_t)pSrc;
 	DMA2D->OMAR = (uint32_t)pDst;
 	DMA2D->FGOR = OffLineSrc;

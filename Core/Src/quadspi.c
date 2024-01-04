@@ -31,14 +31,14 @@ QSPI_HandleTypeDef hqspi;
 //{
 //
 //  /* USER CODE BEGIN QUADSPI_Init 0 */
-////////
+//////////
 //  /* USER CODE END QUADSPI_Init 0 */
 //
 //  /* USER CODE BEGIN QUADSPI_Init 1 */
-////////
+//////////
 //  /* USER CODE END QUADSPI_Init 1 */
 //  hqspi.Instance = QUADSPI;
-//  hqspi.Init.ClockPrescaler = 2;
+//  hqspi.Init.ClockPrescaler = 1;
 //  hqspi.Init.FifoThreshold = 32;
 //  hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
 //  hqspi.Init.FlashSize = 8;
@@ -51,7 +51,7 @@ QSPI_HandleTypeDef hqspi;
 //    Error_Handler();
 //  }
 //  /* USER CODE BEGIN QUADSPI_Init 2 */
-////////
+//////////
 //  /* USER CODE END QUADSPI_Init 2 */
 //
 //}

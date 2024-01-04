@@ -27,6 +27,7 @@
 #include "lwip.h"
 #include "quadspi.h"
 #include "sdmmc.h"
+#include "usart.h"
 #include "gpio.h"
 #include "fmc.h"
 
@@ -102,6 +103,10 @@ int main(void)
   __HAL_RCC_D2SRAM1_CLK_ENABLE();
   __HAL_RCC_D2SRAM2_CLK_ENABLE();
   __HAL_RCC_D2SRAM3_CLK_ENABLE();
+  W25QXX_Init();
+  W25Q_Memory_Mapped_Enable();
+  rodata_copy_to_ram();
+  hardware_reset();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -114,11 +119,8 @@ int main(void)
   MX_DMA2D_Init();
   MX_LTDC_Init();
   MX_I2C1_Init();
+  MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-  hardware_reset();
-  W25QXX_Init();
-  W25Q_Memory_Mapped_Enable();
-  rodata_copy_to_ram();
   MX_FATFS_Init();
   thread_init();
   /* USER CODE END 2 */
@@ -138,8 +140,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    osDelay(20);
+
     /* USER CODE BEGIN 3 */
+    osDelay(10);
   }
   /* USER CODE END 3 */
 }
