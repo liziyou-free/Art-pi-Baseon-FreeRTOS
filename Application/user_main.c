@@ -7,7 +7,9 @@
 /*
  *  Function declaration ...
  */
+void lvgl_task(void *arg);
 void lwiperf_example_init(void);
+void lvgl_adapter_layer_init(void);
 void Net_Task_BaseOn_FreeRTOS(void *argumnet);
 void sdram_speed_test();
 
@@ -22,58 +24,70 @@ void sdram_speed_test();
  *  Variable definition ...
  */
 osThreadId_t netTaskHandle;
+osThreadId_t LvglTaskHandle;
+
 const osThreadAttr_t netTask_attributes = {
   .name = "netTask",
   .stack_size = 1280 * 4,
-  .priority = (osPriority_t) osPriorityRealtime3,
+  .priority = (osPriority_t) osPriorityNormal3,
+};
+
+const osThreadAttr_t LvglTask_attributes = {
+  .name = "LvglTask",
+  .stack_size = 1280 * 20,
+  .priority = (osPriority_t) osPriorityNormal1,
 };
 
 
-/*************************** User Code Area ***************************/
+/*******************************************************************************
+* User Code Area
+*******************************************************************************/
 
-int Device_Id = 0;
 
 void thread_init(void) {
-    
+
     netTaskHandle = osThreadNew(Net_Task_BaseOn_FreeRTOS, NULL, &netTask_attributes);
     if (!netTaskHandle) {
-        while(1);
+        for (;;){}
     }
+
+    LvglTaskHandle = osThreadNew(lvgl_task, NULL, &LvglTask_attributes);
+    if (!LvglTaskHandle) {
+        for (;;){}
+    }
+
     return;
 }
 
 
-
-
-void defualt_thread_entry(void){
-
-	extern SoftWareI2cStruct Ov2640_Instance;
-//    sdram_speed_test();
-//    lwiperf_example_init();
-    
-//    Device_Id = ov2640_ReadID(&Ov2640_Instance);
-//    ov2640_Config(&Ov2640_Instance, 1, 1, 1);
-//    ov2640_Init(&Ov2640_Instance, CAMERA_R320x240);
-//
-//    HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, 0xC1000000, 320*240*2);
-    while(1) {
-        osDelay(100);
-    }
+void lvgl_task(void *arg)
+{
+	lv_init();
+	lvgl_adapter_layer_init();
+	lv_demo_benchmark();
+//	lv_demo_stress();
+	for (;;)
+	{
+		lv_timer_handler();
+		osDelay(5);
+	}
 }
 
 
+void sdram_speed_test()
+{
+	static volatile int start_time;
+	static volatile int end_time;
+	static volatile int final_value;
+	uint32_t *test_buffer;
 
-uint32_t *test_buffer = (uint32_t *)0xC0000000;   //[(1024*1024*16)/4] __attribute__((section("sdram0")));
-
-static volatile int start_time = 0, end_time = 0, final_value = 0;
-
-void sdram_speed_test() {
-    
+	test_buffer = (uint32_t *)0xC0000000;
     start_time = HAL_GetTick();
     memset(test_buffer, 0xA5A5, 1024*1024*32);
     end_time = HAL_GetTick();
     final_value = end_time - start_time;
-    printf("time :%d", final_value);
+//    printf("time :%d", final_value);
+    return;
 }
 
 
@@ -81,24 +95,10 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
     
     int sct = 0; 
     static int res = 0;
-    char *dtr = "Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-    		    "Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;"
-				"Hello,word!@FreedomLi; Hello,word!@FreedomLi; Hello,word!@FreedomLi;\r\n";
-
+    char *dtr ="Hello,word!\r\n";
     struct sockaddr_in dst_ip ;
 
     sdram_speed_test();
-
   retry:
     memset(&dst_ip,0,sizeof(struct sockaddr_in));
     while(!netif_is_link_up(&gnetif))
@@ -113,7 +113,6 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
     dst_ip.sin_port = htons(6666);
     dst_ip.sin_family = AF_INET;
     dst_ip.sin_addr.s_addr = inet_addr("192.168.0.198");
-    
     res = connect(sct,(struct sockaddr*)&dst_ip, sizeof(struct sockaddr_in));
     if(res<0){
         closesocket(sct);
@@ -128,10 +127,44 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
         }
         osDelay(5);
     }
+    return;
 }
 
 
-void MPU_Config( void )
+void defualt_thread_entry(void)
+{
+//	int Device_Id = 0;
+//	extern SoftWareI2cStruct Ov2640_Instance;
+//    sdram_speed_test();
+//    lwiperf_example_init();
+
+//    Device_Id = ov2640_ReadID(&Ov2640_Instance);
+//    ov2640_Config(&Ov2640_Instance, 1, 1, 1);
+//    ov2640_Init(&Ov2640_Instance, CAMERA_R320x240);
+//
+//    HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, 0xC1000000, 320*240*2);
+//    while(1) {
+//        osDelay(100);
+//    }
+}
+
+
+void rodata_copy_to_ram(void)
+{
+	extern uint32_t _ex_sidata;
+	extern uint32_t _ex_data_excu_star_addr;
+	extern uint32_t _ex_data_excu_end_addr;
+
+	uint32_t len = ((uint32_t)&_ex_data_excu_end_addr) - \
+	               ((uint32_t)&_ex_data_excu_star_addr);
+
+	memcpy((void*)&_ex_data_excu_star_addr, (void*)&_ex_sidata, len);
+	return;
+}
+
+
+__attribute__((section(".user_code")))
+void MPU_Config(void)
 {
   MPU_Region_InitTypeDef MPU_InitStruct;
   
@@ -220,7 +253,7 @@ void MPU_Config( void )
   MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
   MPU_InitStruct.Number = MPU_REGION_NUMBER5;
-  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
   MPU_InitStruct.SubRegionDisable = 0x00;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
 

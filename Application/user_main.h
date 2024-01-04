@@ -13,12 +13,17 @@
 #include "gpio.h"
 #include "fmc.h"
 #include "sockets.h"
-#include <stdint.h>
 #include "ff.h"
 #include "gpioi2c.h"
 #include "ov2640.h"
 #include "dcmi.h"
+#include "lvgl.h"
+
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 void MPU_Config( void );
 void thread_init(void);
+void rodata_copy_to_ram(void);
 void defualt_thread_entry(void);

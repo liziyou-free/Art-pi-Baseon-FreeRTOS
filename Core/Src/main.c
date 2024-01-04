@@ -32,7 +32,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "./user_main.h"
+#include "../Application/user_main.h"
 #include "w25qxx.h"
 /* USER CODE END Includes */
 
@@ -118,6 +118,7 @@ int main(void)
   hardware_reset();
   W25QXX_Init();
   W25Q_Memory_Mapped_Enable();
+  rodata_copy_to_ram();
   MX_FATFS_Init();
   thread_init();
   /* USER CODE END 2 */
@@ -137,7 +138,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    osDelay(20);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

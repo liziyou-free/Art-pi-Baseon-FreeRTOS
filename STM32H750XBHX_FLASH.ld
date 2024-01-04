@@ -45,6 +45,7 @@ MEMORY
 {
   FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 128K
   EX_FLASH (rx)  : ORIGIN = 0x90000000, LENGTH = 8M 
+  EX_SDRAM (xrw) : ORIGIN = 0xC0000000, LENGTH = 32M
   DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
   RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
   RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
@@ -67,10 +68,13 @@ SECTIONS
   .text :
   {
     . = ALIGN(4);
-    ./Core/*(.text)
-    ./Core/*(.text*)
-    ./Drivers/*(.text*)
-    ./Drivers/*(.text*)
+    ./Core/*(.text) 
+    ./Core/*(.text*) 
+    ./Drivers/*(.text) 
+    ./Drivers/*(.text*) 
+    ./Middlewares/Third_Party/FreeRTOS/*(.text) 
+    ./Middlewares/Third_Party/FreeRTOS/*(.text*) 
+    *(.user_code)
     *(.glue_7)         /* glue arm to thumb code */
     *(.glue_7t)        /* glue thumb to arm code */
     *(.eh_frame)
@@ -86,8 +90,12 @@ SECTIONS
   .rodata :
   {
     . = ALIGN(4);
-    *(.rodata)         /* .rodata sections (constants, strings, etc.) */
-    *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+    ./Core/*(.rodata)         /* .rodata sections (constants, strings, etc.) */
+    ./Core/*(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+    ./Drivers/*(.rodata)         /* .rodata sections (constants, strings, etc.) */
+    ./Drivers/*(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+    ./Middlewares/Third_Party/FreeRTOS/*(.rodata) 
+    ./Middlewares/Third_Party/FreeRTOS/*(.rodata*) 
     . = ALIGN(4);
   } >FLASH
 
@@ -129,8 +137,10 @@ SECTIONS
   {
     . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */
-    *(.data)           /* .data sections */
-    *(.data*)          /* .data* sections */
+    ./Core/*(.data)    /* .data sections */
+    ./Core/*(.data*)   /* .data* sections */
+    ./Drivers/*(.data)    /* .data sections */
+    ./Drivers/*(.data*)   /* .data* sections */
     *(.RamFunc)        /* .RamFunc sections */
     *(.RamFunc*)       /* .RamFunc* sections */
 
@@ -138,6 +148,18 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
   } >RAM_D1 AT> FLASH
 
+  _ex_sidata = LOADADDR(.extern_data);
+  
+  .extern_data :
+  {
+     . = ALIGN(4);
+     _ex_data_excu_star_addr = .;
+     *(.data)
+     *(.data*)
+     _ex_data_excu_end_addr = .;
+  } >RAM_D1 AT> EX_FLASH
+  
+  
   /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
@@ -165,13 +187,15 @@ SECTIONS
     . = ALIGN(8);
   } >RAM_D1
 
-  
   .ethernet_descriptor : {
-    
     *(.RxDecripSection)
     *(.TxDecripSection)
   } >RAM_D2
   
+  .lcd_framebuffer : 
+  {
+    
+  } >EX_SDRAM
   
   /* Remove information from the standard libraries */
   /* /DISCARD/ : */
@@ -192,6 +216,9 @@ SECTIONS
      . = ALIGN(4);
      *(.text)
      *(.text*)
+     . = ALIGN(4);
+     *(.rodata)
+     *(.rodata*)
      KEEP(*(.ex_flash))
   } >EX_FLASH
   
