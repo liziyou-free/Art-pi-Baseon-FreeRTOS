@@ -20,12 +20,12 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "dcmi.h"
+#include "dma.h"
 #include "dma2d.h"
 #include "fatfs.h"
 #include "i2c.h"
 #include "ltdc.h"
 #include "lwip.h"
-#include "quadspi.h"
 #include "sdmmc.h"
 #include "usart.h"
 #include "gpio.h"
@@ -106,14 +106,13 @@ int main(void)
   W25QXX_Init();
   W25Q_Memory_Mapped_Enable();
   rodata_copy_to_ram();
-  hardware_reset();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SDMMC1_SD_Init();
-//  MX_FATFS_Init();
-  MX_QUADSPI_Init();
+  MX_FATFS_Init();
   MX_FMC_Init();
   MX_DCMI_Init();
   MX_DMA2D_Init();
@@ -121,7 +120,7 @@ int main(void)
   MX_I2C1_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-  MX_FATFS_Init();
+  hardware_reset();
   thread_init();
   /* USER CODE END 2 */
 

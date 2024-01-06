@@ -23,7 +23,7 @@ uint8_t w25qxx_buf[4096];
 uint16_t w25qxx_mid = W25Q128;
 
 /*----------------------------------------------------------------------------*/
-extern QSPI_HandleTypeDef hqspi;
+QSPI_HandleTypeDef hqspi;
 
 void MX_QUADSPI_Init(void)
 {

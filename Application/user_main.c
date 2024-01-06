@@ -5,37 +5,45 @@
 
 
 /*
- *  Function declaration ...
+ *  \brief Function declaration ...
  */
-void lvgl_task(void *arg);
+void lvgl_thread(void *arg);
+void iperf_thread(void *arg);
+void sdram_speed_test();
 void lwiperf_example_init(void);
 void lvgl_adapter_layer_init(void);
-void Net_Task_BaseOn_FreeRTOS(void *argumnet);
-void sdram_speed_test();
+void touch_controller_thread(void *arg);
 
 
 /*
- *  External variable definition ...
+ *  \brief External variable definition ...
  */
  extern struct netif gnetif;
  
  
 /*
- *  Variable definition ...
+ *  \brief Variable definition ...
  */
 osThreadId_t netTaskHandle;
 osThreadId_t LvglTaskHandle;
+osThreadId_t TouchTaskHandle;
 
-const osThreadAttr_t netTask_attributes = {
+const osThreadAttr_t NetTask_attr = {
   .name = "netTask",
   .stack_size = 1280 * 4,
-  .priority = (osPriority_t) osPriorityRealtime7,
+  .priority = (osPriority_t) osPriorityNormal3,
 };
 
-const osThreadAttr_t LvglTask_attributes = {
+const osThreadAttr_t LvglTask_attr = {
   .name = "LvglTask",
   .stack_size = 1280 * 20,
-  .priority = (osPriority_t) osPriorityNormal1,
+  .priority = (osPriority_t) osPriorityNormal3,
+};
+
+const osThreadAttr_t TouchTask_attr = {
+  .name = "TouchTask",
+  .stack_size = 1280 * 2,
+  .priority = (osPriority_t) osPriorityNormal3,
 };
 
 
@@ -46,28 +54,38 @@ const osThreadAttr_t LvglTask_attributes = {
 
 void thread_init(void) {
 
-    netTaskHandle = osThreadNew(Net_Task_BaseOn_FreeRTOS, NULL, &netTask_attributes);
+    netTaskHandle = osThreadNew(iperf_thread, NULL, &NetTask_attr);
     if (!netTaskHandle) {
         for (;;){}
     }
-
-    LvglTaskHandle = osThreadNew(lvgl_task, NULL, &LvglTask_attributes);
-    if (!LvglTaskHandle) {
-        for (;;){}
-    }
-
+    lvgl_thread_init();
     return;
 }
 
 
-void lvgl_task(void *arg)
+void lvgl_thread_init()
 {
-    sdram_speed_test();
-    cormark_main();
+    LvglTaskHandle = osThreadNew(lvgl_thread, NULL, &LvglTask_attr);
+    if (!LvglTaskHandle) {
+        for (;;){}
+    }
+
+    TouchTaskHandle = osThreadNew(touch_controller_thread, NULL, &TouchTask_attr);
+    if (!TouchTaskHandle) {
+        for (;;){}
+    }
+    return;
+}
+
+
+void lvgl_thread(void *arg)
+{
+//    cormark_main();
 	lv_init();
 	lvgl_adapter_layer_init();
-	lv_demo_benchmark();
+//	lv_demo_benchmark();
 //	lv_demo_stress();
+	lv_demo_widgets();
 	for (;;)
 	{
 		lv_timer_handler();
@@ -89,13 +107,13 @@ void sdram_speed_test()
     end_time = HAL_GetTick();
     final_value = end_time - start_time;
     printf("********************************\r\n");
-    printf("* SDRAM Write Speed:%3.2fMB/s *\r\n", 32.0 / (final_value / 1000.0));
+    printf("* SDRAM Write Speed:%3.2fMB/s *\r\n", (double)(32.0 / (final_value / 1000.0)));
     printf("********************************\r\n");
     return;
 }
 
 
-void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
+void iperf_thread(void *arg) {
     
     int sct = 0; 
     static int res = 0;
@@ -103,27 +121,30 @@ void Net_Task_BaseOn_FreeRTOS(void *argumnet) {
 
     lwiperf_example_init();
 
-  retry:
+retry:
     memset(&dst_ip,0,sizeof(struct sockaddr_in));
+
     while(!netif_is_link_up(&gnetif))
     {
         osDelay(20);
     }
+
     sct = socket(AF_INET,SOCK_STREAM,0);
     if(sct<0){    
         close(sct);
     }
-    
+
     dst_ip.sin_port = htons(6666);
     dst_ip.sin_family = AF_INET;
     dst_ip.sin_addr.s_addr = inet_addr("192.168.0.198");
     res = connect(sct,(struct sockaddr*)&dst_ip, sizeof(struct sockaddr_in));
-    if(res<0){
+    if (res < 0) {
         closesocket(sct);
         osDelay(500);
         goto retry;
     }
-    while (1) {
+
+    for (;;) {
         res = write(sct, (void *)0xC0000000, 10240);
         if (res == -1) {
             closesocket(sct);

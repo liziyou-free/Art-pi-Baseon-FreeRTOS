@@ -75,10 +75,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = GPIO_TOUCHSCREEN_INT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIO_TOUCHSCREEN_INT_GPIO_Port, &GPIO_InitStruct);
+//  GPIO_InitStruct.Pin = GPIO_TOUCHSCREEN_INT_Pin;
+//  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+//  GPIO_InitStruct.Pull = GPIO_PULLUP;
+//  HAL_GPIO_Init(GPIO_TOUCHSCREEN_INT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = GPIO_ETH_PHY_RST_Pin;
@@ -97,18 +97,39 @@ void MX_GPIO_Init(void)
 
 void hardware_reset(void) {
 
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
 	/* \brief Ethernet phy reset */
-    HAL_GPIO_WritePin(GPIOA, GPIO_ETH_PHY_RST_Pin, GPIO_PIN_RESET);
-    HAL_Delay(50);
-    HAL_GPIO_WritePin(GPIOA, GPIO_ETH_PHY_RST_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIO_ETH_PHY_RST_GPIO_Port, GPIO_ETH_PHY_RST_Pin, GPIO_PIN_RESET);
+    HAL_Delay(20);
+    HAL_GPIO_WritePin(GPIO_ETH_PHY_RST_GPIO_Port, GPIO_ETH_PHY_RST_Pin, GPIO_PIN_SET);
 
 	/* \brief LCD BackLight */
-    HAL_GPIO_WritePin(GPIOA, GPIO_LCD_BLACKLIGHT_Pin, GPIO_PIN_RESET);
-    HAL_Delay(50);
-    HAL_GPIO_WritePin(GPIOA, GPIO_LCD_BLACKLIGHT_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIO_LCD_BLACKLIGHT_GPIO_Port, GPIO_LCD_BLACKLIGHT_Pin, GPIO_PIN_SET);
+
+    /* \brief Touch Controller */
+    /* Set as push-pull output */
+    GPIO_InitStruct.Pin = GPIO_TOUCHSCREEN_INT_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIO_TOUCHSCREEN_INT_GPIO_Port, &GPIO_InitStruct);
+
+    HAL_GPIO_WritePin(GPIO_TOUCHSCREEN_RST_GPIO_Port, GPIO_TOUCHSCREEN_RST_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIO_TOUCHSCREEN_INT_GPIO_Port, GPIO_TOUCHSCREEN_INT_Pin, GPIO_PIN_RESET);
+    HAL_Delay(20);
+    HAL_GPIO_WritePin(GPIO_TOUCHSCREEN_INT_GPIO_Port, GPIO_TOUCHSCREEN_INT_Pin, GPIO_PIN_SET);
+    HAL_Delay(5);
+    HAL_GPIO_WritePin(GPIO_TOUCHSCREEN_RST_GPIO_Port, GPIO_TOUCHSCREEN_RST_Pin, GPIO_PIN_SET);
+    HAL_Delay(20);
+//
+//    /* Set as input to detect external interrupt signal */
+//    GPIO_InitStruct.Pin = GPIO_TOUCHSCREEN_INT_Pin;
+//    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    HAL_GPIO_Init(GPIO_TOUCHSCREEN_INT_GPIO_Port, &GPIO_InitStruct);
 
     /*
-     * Reset Touch Screen, I2C, SDcard Detect, Led ...
+     * Reset SDcard Detect, Led ...
      */
 }
 /* USER CODE END 2 */

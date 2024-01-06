@@ -143,12 +143,13 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application"/>
-						<entry excluding="BootSrc/retarget_io.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="CMSIS|CMSIS/Core_A|CMSIS/DSP|CMSIS/NN" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry excluding="BootSrc/retarget_io.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
+						<entry excluding="Third_Party/Coremark/zephyr|Third_Party/Coremark/simple|Third_Party/Coremark/rtems|Third_Party/Coremark/posix|Third_Party/Coremark/macos|Third_Party/Coremark/linux|Third_Party/Coremark/freebsd|Third_Party/Coremark/docs|Third_Party/Coremark/cygwin|Third_Party/Coremark/barebones|Third_Party/lvgl/scripts|Third_Party/lvgl/tests|Third_Party/lvgl/examples|Third_Party/lvgl/env_support|Third_Party/lvgl/docs|Third_Party/LwIP/src/apps|Third_Party/LwIP/contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
+						<entry excluding="picture.c|ov5640.c|ov5640_reg.c|ov2640.c|gpioi2c.c|camera_ov7725.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CommonDriver"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares/Third_Party/LwIP/contrib/examples/lwiperf"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FATFS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="LWIP"/>
-						<entry excluding="Third_Party/Coremark/zephyr|Third_Party/Coremark/simple|Third_Party/Coremark/rtems|Third_Party/Coremark/posix|Third_Party/Coremark/macos|Third_Party/Coremark/linux|Third_Party/Coremark/freebsd|Third_Party/Coremark/docs|Third_Party/Coremark/cygwin|Third_Party/Coremark/barebones|Third_Party/lvgl/scripts|Third_Party/lvgl/tests|Third_Party/lvgl/examples|Third_Party/lvgl/env_support|Third_Party/lvgl/docs|Third_Party/LwIP/src/apps|Third_Party/LwIP/contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares/Third_Party/LwIP/contrib/examples/lwiperf"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares/Third_Party/LwIP/src/apps/lwiperf"/>
 					</sourceEntries>
 				</configuration>
@@ -279,12 +280,13 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Application"/>
-						<entry excluding="BootSrc/retarget_io.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="CMSIS|CMSIS/Core_A|CMSIS/DSP|CMSIS/NN" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry excluding="BootSrc/retarget_io.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
+						<entry excluding="Third_Party/Coremark/zephyr|Third_Party/Coremark/simple|Third_Party/Coremark/rtems|Third_Party/Coremark/posix|Third_Party/Coremark/macos|Third_Party/Coremark/linux|Third_Party/Coremark/freebsd|Third_Party/Coremark/docs|Third_Party/Coremark/cygwin|Third_Party/Coremark/barebones|Third_Party/lvgl/scripts|Third_Party/lvgl/tests|Third_Party/lvgl/examples|Third_Party/lvgl/env_support|Third_Party/lvgl/docs|Third_Party/LwIP/src/apps|Third_Party/LwIP/contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
+						<entry excluding="picture.c|ov5640.c|ov5640_reg.c|ov2640.c|gpioi2c.c|camera_ov7725.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CommonDriver"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares/Third_Party/LwIP/contrib/examples/lwiperf"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FATFS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="LWIP"/>
-						<entry excluding="Third_Party/Coremark/zephyr|Third_Party/Coremark/simple|Third_Party/Coremark/rtems|Third_Party/Coremark/posix|Third_Party/Coremark/macos|Third_Party/Coremark/linux|Third_Party/Coremark/freebsd|Third_Party/Coremark/docs|Third_Party/Coremark/cygwin|Third_Party/Coremark/barebones|Third_Party/lvgl/scripts|Third_Party/lvgl/tests|Third_Party/lvgl/examples|Third_Party/lvgl/env_support|Third_Party/lvgl/docs|Third_Party/LwIP/src/apps|Third_Party/LwIP/contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares/Third_Party/LwIP/contrib/examples/lwiperf"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares/Third_Party/LwIP/src/apps/lwiperf"/>
 					</sourceEntries>
 				</configuration>

@@ -6,7 +6,7 @@
 
 #include "main.h"
 #include "stm32h7xx_hal.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 #include "fatfs.h"
 #include "lwip.h"
 #include "sdmmc.h"

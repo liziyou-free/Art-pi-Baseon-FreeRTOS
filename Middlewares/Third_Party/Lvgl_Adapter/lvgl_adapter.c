@@ -3,6 +3,7 @@
  */
 
 #include "lvgl.h"
+#include "gt9147.h"
 #include "stm32h7xx_hal.h"
 
 
@@ -19,8 +20,10 @@ static lv_color_t buf_2[MY_DISP_HOR_RES * 50];
 
 static lv_disp_drv_t disp_drv_obj;          /*A variable to hold the drivers. Must be static or global.*/
 
+static lv_indev_drv_t indev_drv;
 
 static void my_flush_cb(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
+static void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
 
 void lvgl_adapter_layer_init(void)
@@ -37,17 +40,18 @@ void lvgl_adapter_layer_init(void)
 
 	lv_disp_t * disp;
 	disp = lv_disp_drv_register(&disp_drv_obj); /*Register the driver and save the created display objects*/
+
+    lv_indev_drv_init(&indev_drv);
+    indev_drv.type = LV_INDEV_TYPE_POINTER;
+    indev_drv.read_cb = my_input_read;
+    lv_indev_drv_register(&indev_drv);
+
 	return;
 }
 
 
-
-extern void DMA2D_Copy(void * pSrc,
-                       void * pDst,
-                       uint32_t xSize,
-                       uint32_t ySize,
-                       uint32_t OffLineSrc,
-                       uint32_t OffLineDst,
+extern void DMA2D_Copy(void * pSrc, void * pDst, uint32_t xSize, uint32_t ySize, \
+                       uint32_t OffLineSrc, uint32_t OffLineDst, \
                        uint32_t PixelFormat);
 
 
@@ -55,16 +59,31 @@ static void my_flush_cb(lv_disp_drv_t * disp_drv,
                         const lv_area_t * area,
                         lv_color_t * color_p)
 {
-    SCB_CleanInvalidateDCache();
+//    SCB_CleanInvalidateDCache();
 	DMA2D_Copy(color_p,
-              (0xC0000000+((area->x1)*2)+((area->y1)*800*2)),
+              (void *)(0xC0000000+((area->x1)*2)+((area->y1)*800*2)),
               (area->x2 - area->x1 + 1),
               (area->y2 - area->y1 + 1),
               0,
               800-(area->x2 - area->x1 + 1),
               LTDC_PIXEL_FORMAT_RGB565
               );
-//	LCD_Draw_Rectangle(area->x1,area->y1,area->x2,area->y2,color_p);
-//
 	lv_disp_flush_ready(disp_drv);
+}
+
+
+static void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
+{
+    extern _m_tp_dev tp_dev;
+
+    if(tp_dev.sta&(0x01<<15)) {
+        data->point.x = tp_dev.x[0];
+        data->point.y = tp_dev.y[0];
+        data->state = LV_INDEV_STATE_PRESSED;
+    }
+    else {
+        data->point.x = tp_dev.x[4];
+        data->point.y = tp_dev.y[4];
+        data->state = LV_INDEV_STATE_RELEASED;
+    }
 }
