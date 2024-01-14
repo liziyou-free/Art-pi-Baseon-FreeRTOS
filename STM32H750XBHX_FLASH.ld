@@ -72,8 +72,6 @@ SECTIONS
     ./Core/*(.text*) 
     ./Drivers/*(.text) 
     ./Drivers/*(.text*) 
-    ./Middlewares/Third_Party/FreeRTOS/*(.text) 
-    ./Middlewares/Third_Party/FreeRTOS/*(.text*) 
     *(.user_code)
     *(.glue_7)         /* glue arm to thumb code */
     *(.glue_7t)        /* glue thumb to arm code */
@@ -95,7 +93,7 @@ SECTIONS
     ./Drivers/*(.rodata)         /* .rodata sections (constants, strings, etc.) */
     ./Drivers/*(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     ./Middlewares/Third_Party/FreeRTOS/*(.rodata) 
-    ./Middlewares/Third_Party/FreeRTOS/*(.rodata*) 
+    ./Middlewares/Third_Party/FreeRTOS/*(.rodata*)
     . = ALIGN(4);
   } >FLASH
 
@@ -141,12 +139,24 @@ SECTIONS
     ./Core/*(.data*)   /* .data* sections */
     ./Drivers/*(.data)    /* .data sections */
     ./Drivers/*(.data*)   /* .data* sections */
-    *(.RamFunc)        /* .RamFunc sections */
-    *(.RamFunc*)       /* .RamFunc* sections */
-
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
   } >RAM_D1 AT> FLASH
+
+
+  _ram_func_loader_addr = LOADADDR(.ram_func);
+  
+  .ram_func :
+  {
+     . = ALIGN(4);
+     _ram_func_excu_start_addr = .;
+    *(.RamFunc)        /* .RamFunc sections */
+    *(.RamFunc*)       /* .RamFunc* sections */
+    ./Middlewares/Third_Party/FreeRTOS/*(.text)
+    ./Middlewares/Third_Party/FreeRTOS/*(.text*)
+     _ram_func_excu_end_addr = .;
+  } >ITCMRAM AT> EX_FLASH
+  
 
   _ex_sidata = LOADADDR(.extern_data);
   

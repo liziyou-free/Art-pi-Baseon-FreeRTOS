@@ -23,9 +23,9 @@ uint8_t w25qxx_buf[4096];
 uint16_t w25qxx_mid = W25Q128;
 
 /*----------------------------------------------------------------------------*/
-QSPI_HandleTypeDef hqspi;
+extern QSPI_HandleTypeDef hqspi;
 
-void MX_QUADSPI_Init(void)
+void MX_HAL_QUADSPI_Init(void)
 {
     hqspi.Instance            = QUADSPI;
     hqspi.Init.ClockPrescaler = 1;
@@ -44,8 +44,7 @@ void MX_QUADSPI_Init(void)
 
 void W25QXX_Init(void)
 {
-	HAL_QSPI_MspInit(&hqspi);
-    MX_QUADSPI_Init();
+	MX_HAL_QUADSPI_Init();
     W25QXX_ExitQPIMode();
     W25QXX_Reset();
     W25QXX_EnterQPIMode();

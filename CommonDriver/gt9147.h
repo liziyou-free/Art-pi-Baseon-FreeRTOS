@@ -51,7 +51,7 @@ void GT9147_RD_Reg(uint16_t reg,uint8_t *buf,uint8_t len);
 uint8_t GT9147_Init(void);
 uint8_t GT9147_Scan();
 
-#endif /* __GT9147_DRIVER_H__ */*/
+#endif /* __GT9147_DRIVER_H__ */
 
 
 

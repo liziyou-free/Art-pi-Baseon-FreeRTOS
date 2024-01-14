@@ -111,8 +111,8 @@ void DMA2D_Copy(void * pSrc,
 				uint32_t OffLineDst,
 				uint32_t PixelFormat)
 {
-	/* DMA2D 采用存储器到存储器模�?, 这种模式是前景层作为 DMA2D 输入 */
-	DMA2D->CR = 0x00000000UL | (1 << 9);   //�?启传输完成中�?
+	/* DMA2D 采用存储器到存储器模�???, 这种模式是前景层作为 DMA2D 输入 */
+	DMA2D->CR = 0x00000000UL | (1 << 9);
 	DMA2D->FGMAR = (uint32_t)pSrc;
 	DMA2D->OMAR = (uint32_t)pDst;
 	DMA2D->FGOR = OffLineSrc;
@@ -128,14 +128,15 @@ void DMA2D_Copy(void * pSrc,
 	DMA2D->CR |= DMA2D_CR_START;
 
 	/* 等待 DMA2D 传输完成 */
-	while (DMA2D->CR & DMA2D_CR_START) {}
+//	while (DMA2D->CR & DMA2D_CR_START) {}
 	// lv_disp_flush_ready(&MyDisp_drv);
 
 }
 
 
 void LCD_FillRec(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint16_t color){
-	 	SCB_CleanDCache();
+
+    SCB_CleanDCache();
 
    DMA2D->CR = 0x30000;
    DMA2D->OMAR = (uint32_t)(0xC0000000+(x0*2)+(y0*800*2));

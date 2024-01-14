@@ -84,23 +84,23 @@
 /*----- Value in opt.h for TCPIP_THREAD_STACKSIZE: 0 -----*/
 #define TCPIP_THREAD_STACKSIZE 1024
 /*----- Value in opt.h for TCPIP_THREAD_PRIO: 1 -----*/
-#define TCPIP_THREAD_PRIO osPriorityRealtime1  // 8
+#define TCPIP_THREAD_PRIO 8
 /*----- Value in opt.h for TCPIP_MBOX_SIZE: 0 -----*/
-#define TCPIP_MBOX_SIZE 20  // 6
+#define TCPIP_MBOX_SIZE 6
 /*----- Value in opt.h for SLIPIF_THREAD_STACKSIZE: 0 -----*/
 #define SLIPIF_THREAD_STACKSIZE 1024
 /*----- Value in opt.h for SLIPIF_THREAD_PRIO: 1 -----*/
-#define SLIPIF_THREAD_PRIO osPriorityRealtime1  // 3
+#define SLIPIF_THREAD_PRIO 3
 /*----- Value in opt.h for DEFAULT_THREAD_STACKSIZE: 0 -----*/
 #define DEFAULT_THREAD_STACKSIZE 2048
 /*----- Value in opt.h for DEFAULT_THREAD_PRIO: 1 -----*/
-#define DEFAULT_THREAD_PRIO osPriorityRealtime1 // 5
+#define DEFAULT_THREAD_PRIO 5
 /*----- Value in opt.h for DEFAULT_UDP_RECVMBOX_SIZE: 0 -----*/
-#define DEFAULT_UDP_RECVMBOX_SIZE 20  // 6
+#define DEFAULT_UDP_RECVMBOX_SIZE 6
 /*----- Value in opt.h for DEFAULT_TCP_RECVMBOX_SIZE: 0 -----*/
-#define DEFAULT_TCP_RECVMBOX_SIZE 20  // 6
+#define DEFAULT_TCP_RECVMBOX_SIZE 6
 /*----- Value in opt.h for DEFAULT_ACCEPTMBOX_SIZE: 0 -----*/
-#define DEFAULT_ACCEPTMBOX_SIZE 20  // 6
+#define DEFAULT_ACCEPTMBOX_SIZE 6
 /*----- Value in opt.h for RECV_BUFSIZE_DEFAULT: INT_MAX -----*/
 #define RECV_BUFSIZE_DEFAULT 2000000000
 /*----- Default Value for LWIP_SNTP: 0 ---*/
@@ -126,6 +126,16 @@
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 #define LWIP_TIMEVAL_PRIVATE    0
+
+#undef TCPIP_THREAD_PRIO
+#define TCPIP_THREAD_PRIO    osPriorityRealtime1
+
+#undef SLIPIF_THREAD_PRIO
+#define SLIPIF_THREAD_PRIO   osPriorityRealtime
+
+#undef DEFAULT_THREAD_PRIO
+#define DEFAULT_THREAD_PRIO  osPriorityRealtime
+
 /* USER CODE END 1 */
 
 #ifdef __cplusplus
