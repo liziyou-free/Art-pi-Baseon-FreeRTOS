@@ -85,7 +85,7 @@ void touch_controller_thread(void *arg)
     for (;;) {
 //        if (osSemaphoreAcquire(touch_int_semp_id, 5) == osOK) {
             GT9147_Scan();
-            osDelay(20);
+            osDelay(10);
 //        }
     }
     return;

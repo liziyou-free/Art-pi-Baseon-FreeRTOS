@@ -4,6 +4,7 @@
 
 #include "lvgl.h"
 #include "gt9147.h"
+#include "cmsis_os2.h"
 #include "stm32h7xx_hal.h"
 
 
@@ -22,6 +23,10 @@ static lv_disp_drv_t disp_drv_obj;          /*A variable to hold the drivers. Mu
 
 static lv_indev_drv_t indev_drv;
 
+osMessageQueueId_t lcd_queue_id;
+
+const osMessageQueueAttr_t lcd_queue_attr = {.name = "lcd-queue"};
+
 static void my_flush_cb(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
 static void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
@@ -38,7 +43,6 @@ void lvgl_adapter_layer_init(void)
 	disp_drv_obj.flush_cb = my_flush_cb;
 	disp_drv_obj.full_refresh = 1;
 	disp_drv_obj.direct_mode = 0;
-//	disp_drv_obj.clean_dcache_cb = SCB_InvalidateDCache_by_Addr;
 
 	lv_disp_t * disp;
 	disp = lv_disp_drv_register(&disp_drv_obj); /*Register the driver and save the created display objects*/
@@ -48,24 +52,38 @@ void lvgl_adapter_layer_init(void)
     indev_drv.read_cb = my_input_read;
     lv_indev_drv_register(&indev_drv);
 
+    lcd_queue_id = osMessageQueueNew(1, 4, &lcd_queue_attr);
+
     (void)disp;
 
 	return;
 }
 
 
+extern LTDC_HandleTypeDef hltdc;
+
+#define HAL_GET_CURRENT_FRAMEBUFFER_ADDR(layer_idx) \
+                    ((&hltdc.LayerCfg[layer_idx])->FBStartAdress)
+
+
 static void my_flush_cb(lv_disp_drv_t * disp_drv,
                         const lv_area_t * area,
                         lv_color_t * color_p)
 {
-    extern LTDC_HandleTypeDef hltdc;
+    static uint32_t cur_addr;
+
+    cur_addr = (uint32_t)color_p;
 
     if(lv_disp_flush_is_last(disp_drv)) {
-        SCB_CleanInvalidateDCache();
-        HAL_LTDC_SetAddress_NoReload(&hltdc, (uint32_t)color_p, 0);
+        //SCB_CleanInvalidateDCache();
+//        HAL_LTDC_SetAddress_NoReload(&hltdc, (uint32_t)color_p, LTDC_LAYER_1);
         HAL_LTDC_Reload(&hltdc, LTDC_RELOAD_VERTICAL_BLANKING);
-        lv_disp_flush_ready(disp_drv);
+        if (osMessageQueuePut(lcd_queue_id, &cur_addr, 1, osWaitForever) == osOK) {
+//            lv_disp_flush_ready(disp_drv);
+        }
+
     }
+    return;
 }
 
 
@@ -84,6 +102,19 @@ static void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
         data->state = LV_INDEV_STATE_RELEASED;
     }
 }
+
+
+void HAL_LTDC_ReloadEventCallback(LTDC_HandleTypeDef *hltdc)
+{
+    uint32_t addr;
+
+    if (osMessageQueueGet(lcd_queue_id, &addr, NULL, 0) == osOK) {
+        HAL_LTDC_SetAddress(hltdc, (uint32_t)addr, LTDC_LAYER_1);
+    }
+    lv_disp_flush_ready(&disp_drv_obj);
+}
+
+
 
 
 //extern void DMA2D_Copy(void * pSrc, void * pDst, uint32_t xSize, uint32_t ySize, \
