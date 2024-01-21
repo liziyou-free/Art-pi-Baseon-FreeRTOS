@@ -76,7 +76,6 @@ static void my_flush_cb(lv_disp_drv_t * disp_drv,
 
     if(lv_disp_flush_is_last(disp_drv)) {
         //SCB_CleanInvalidateDCache();
-//        HAL_LTDC_SetAddress_NoReload(&hltdc, (uint32_t)color_p, LTDC_LAYER_1);
         HAL_LTDC_Reload(&hltdc, LTDC_RELOAD_VERTICAL_BLANKING);
         if (osMessageQueuePut(lcd_queue_id, &cur_addr, 1, osWaitForever) == osOK) {
 //            lv_disp_flush_ready(disp_drv);
@@ -110,8 +109,8 @@ void HAL_LTDC_ReloadEventCallback(LTDC_HandleTypeDef *hltdc)
 
     if (osMessageQueueGet(lcd_queue_id, &addr, NULL, 0) == osOK) {
         HAL_LTDC_SetAddress(hltdc, (uint32_t)addr, LTDC_LAYER_1);
+        lv_disp_flush_ready(&disp_drv_obj);
     }
-    lv_disp_flush_ready(&disp_drv_obj);
 }
 
 

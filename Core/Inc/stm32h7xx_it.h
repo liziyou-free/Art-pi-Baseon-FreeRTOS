@@ -54,6 +54,7 @@ void UsageFault_Handler(void);
 void DebugMon_Handler(void);
 void DMA1_Stream0_IRQHandler(void);
 void DMA1_Stream1_IRQHandler(void);
+void DMA1_Stream2_IRQHandler(void);
 void TIM4_IRQHandler(void);
 void I2C1_EV_IRQHandler(void);
 void EXTI15_10_IRQHandler(void);
@@ -61,6 +62,7 @@ void SDMMC1_IRQHandler(void);
 void ETH_IRQHandler(void);
 void LTDC_IRQHandler(void);
 void DMA2D_IRQHandler(void);
+void DMAMUX1_OVR_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

@@ -26,6 +26,7 @@
 #include "i2c.h"
 #include "ltdc.h"
 #include "lwip.h"
+#include "sai.h"
 #include "sdmmc.h"
 #include "usart.h"
 #include "gpio.h"
@@ -59,6 +60,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -99,6 +101,9 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+/* Configure the peripherals common clocks */
+  PeriphCommonClock_Config();
+
   /* USER CODE BEGIN SysInit */
   __HAL_RCC_D2SRAM1_CLK_ENABLE();
   __HAL_RCC_D2SRAM2_CLK_ENABLE();
@@ -119,9 +124,10 @@ int main(void)
   MX_LTDC_Init();
   MX_I2C1_Init();
   MX_UART4_Init();
+  MX_SAI1_Init();
   /* USER CODE BEGIN 2 */
   hardware_reset();
-  thread_init();
+  system_init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -204,6 +210,32 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+  /** Initializes the peripherals clock
+  */
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1|RCC_PERIPHCLK_LTDC;
+  PeriphClkInitStruct.PLL3.PLL3M = 20;
+  PeriphClkInitStruct.PLL3.PLL3N = 240;
+  PeriphClkInitStruct.PLL3.PLL3P = 2;
+  PeriphClkInitStruct.PLL3.PLL3Q = 2;
+  PeriphClkInitStruct.PLL3.PLL3R = 8;
+  PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_0;
+  PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
+  PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
+  PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL3;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }

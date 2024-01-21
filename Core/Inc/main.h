@@ -70,7 +70,7 @@ void Error_Handler(void);
 #define GPIO_ETH_PHY_RST_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-
+#define PRINTF_LINE(fmt, ...)    printf(fmt "\r\n", ##__VA_ARGS__)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -13,15 +13,19 @@ void sdram_speed_test();
 void lwiperf_example_init(void);
 void lvgl_adapter_layer_init(void);
 void touch_controller_thread(void *arg);
-void file_thread(void *arg);
+void sdcard_performance_thread(void *arg);
 void lvgl_thread_init(void);
+void audio_thread(void *arg);
+void file_system_mount(void);
+
 
 /*
  *  \brief External variable definition ...
  */
  extern struct netif gnetif;
- 
- 
+ extern FATFS SDFatFS;
+
+
 /*
  *  \brief Variable definition ...
  */
@@ -44,29 +48,33 @@ const osThreadAttr_t LvglTask_attr = {
 
 const osThreadAttr_t TouchTask_attr = {
   .name = "TouchTask",
-  .stack_size = 1280 * 2,
-  .priority = (osPriority_t) osPriorityBelowNormal,
+  .stack_size = 1280,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 const osThreadAttr_t FileTask_attr = {
   .name = "FileTask",
-  .stack_size = 1280 * 2,
-  .priority = (osPriority_t) osPriorityBelowNormal,
+  .stack_size = 1280,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
+
+
 
 /*******************************************************************************
 * User Code Area
 *******************************************************************************/
 
-
-void thread_init(void) {
-
+/*
+ * \brief system init
+ */
+void system_init(void)
+{
     netTaskHandle = osThreadNew(iperf_thread, NULL, &NetTask_attr);
     if (!netTaskHandle) {
         for (;;){}
     }
 
-    FileTaskHandle = osThreadNew(file_thread, NULL, &FileTask_attr);
+    FileTaskHandle = osThreadNew(audio_thread, NULL, &FileTask_attr);
     if (!FileTaskHandle) {
         for (;;){}
     }
@@ -77,6 +85,25 @@ void thread_init(void) {
 }
 
 
+/*
+ * File system mount
+ */
+void file_system_mount(void)
+{
+    uint8_t ret;
+
+    ret = f_mount(&SDFatFS, "0", 1);
+    if (ret != FR_OK) {
+        PRINTF_LINE("File open failed!");
+        for (;;);
+    }
+}
+
+
+
+/*
+ * LVGL init
+ */
 void lvgl_thread_init(void)
 {
     LvglTaskHandle = osThreadNew(lvgl_thread, NULL, &LvglTask_attr);
@@ -92,14 +119,20 @@ void lvgl_thread_init(void)
 }
 
 
+/*
+ * LVGL demo
+ */
 void lvgl_thread(void *arg)
 {
-    cormark_main();
 	lv_init();
 	lvgl_adapter_layer_init();
 //	lv_demo_benchmark();
 //	lv_demo_stress();
-	lv_demo_widgets();
+//	lv_demo_widgets();
+
+#include "./Audio/gui_guider.h"
+	static lv_ui audio_ui;
+	setup_ui(&audio_ui);
 	for (;;)
 	{
 		lv_timer_handler();
@@ -108,7 +141,11 @@ void lvgl_thread(void *arg)
 }
 
 
-void file_thread(void *arg)
+
+/*
+ * Sdcard performance test
+ */
+void sdcard_performance_thread(void *arg)
 {
     FRESULT ret;
     UINT    num;
@@ -121,10 +158,6 @@ void file_thread(void *arg)
 
     test_buffer = (uint32_t *)0xC0000000;
 
-    ret = f_mount(&SDFatFS, "0", 1);
-    if (ret != FR_OK) {
-        for (;;);
-    }
     ret = f_open(&SDFile, "example.txt", FA_READ);
     start_time = HAL_GetTick();
     if (ret == FR_OK) {
@@ -180,7 +213,9 @@ void file_thread(void *arg)
 }
 
 
-
+/*
+ * Sdram performance test
+ */
 void sdram_speed_test()
 {
 	static volatile int start_time;
@@ -200,13 +235,16 @@ void sdram_speed_test()
 }
 
 
+/*
+ * Iperf thread
+ */
 void iperf_thread(void *arg) {
     
     int sct = 0; 
     static int res = 0;
     struct sockaddr_in dst_ip ;
 
-    lwiperf_example_init();
+//    lwiperf_example_init();
 retry:
     memset(&dst_ip,0,sizeof(struct sockaddr_in));
     while(!netif_is_link_up(&gnetif))
@@ -240,6 +278,7 @@ retry:
 
 void defualt_thread_entry(void)
 {
+
 //	int Device_Id = 0;
 //	extern SoftWareI2cStruct Ov2640_Instance;
 //    sdram_speed_test();
@@ -366,10 +405,10 @@ void MPU_Config(void)
   MPU_InitStruct.Size = MPU_REGION_SIZE_16MB;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
-  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
   MPU_InitStruct.Number = MPU_REGION_NUMBER5;
-  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
   MPU_InitStruct.SubRegionDisable = 0x00;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
 
