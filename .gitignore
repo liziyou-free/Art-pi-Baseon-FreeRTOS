@@ -1,5 +1,6 @@
 MDK-ARM/ART-PI
 Debug
+Release
 STM32CubeIDE/Debug
 *.pyc
 *.map

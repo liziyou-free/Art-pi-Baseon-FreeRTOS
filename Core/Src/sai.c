@@ -46,7 +46,7 @@ void MX_SAI1_Init(void)
   hsai_BlockA1.Init.OutputDrive = SAI_OUTPUTDRIVE_ENABLE;
   hsai_BlockA1.Init.NoDivider = SAI_MASTERDIVIDER_ENABLE;
   hsai_BlockA1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_HF;
-  hsai_BlockA1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_44K;
+  hsai_BlockA1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_22K;
   hsai_BlockA1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
   hsai_BlockA1.Init.MonoStereoMode = SAI_STEREOMODE;
   hsai_BlockA1.Init.CompandingMode = SAI_NOCOMPANDING;
@@ -95,10 +95,10 @@ void HAL_SAI_MspInit(SAI_HandleTypeDef* saiHandle)
     hdma_sai1_a.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma_sai1_a.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_sai1_a.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_sai1_a.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;//DMA_PDATAALIGN_WORD;
-    hdma_sai1_a.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;//DMA_MDATAALIGN_WORD;
+    hdma_sai1_a.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_sai1_a.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_sai1_a.Init.Mode = DMA_CIRCULAR;
-    hdma_sai1_a.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    hdma_sai1_a.Init.Priority = DMA_PRIORITY_LOW;
     hdma_sai1_a.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
     hdma_sai1_a.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
     hdma_sai1_a.Init.MemBurst = DMA_MBURST_SINGLE;

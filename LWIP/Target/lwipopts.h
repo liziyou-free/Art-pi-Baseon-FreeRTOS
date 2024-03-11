@@ -136,6 +136,24 @@
 #undef DEFAULT_THREAD_PRIO
 #define DEFAULT_THREAD_PRIO  osPriorityRealtime
 
+#define MEM_SIZE             (15 * 1024)
+
+#define MEMP_NUM_PBUF        256
+
+#define MEMP_NUM_RAW_PCB     32
+
+#define MEMP_NUM_UDP_PCB     32
+
+#define MEMP_NUM_TCP_PCB     32
+
+#define MEMP_NUM_TCP_PCB_LISTEN         16
+
+#define MEMP_NUM_TCP_SEG                32
+
+#define PBUF_POOL_SIZE                  256
+
+
+
 /* USER CODE END 1 */
 
 #ifdef __cplusplus

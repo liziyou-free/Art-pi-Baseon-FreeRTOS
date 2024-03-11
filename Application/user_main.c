@@ -2,7 +2,7 @@
  *  Include Header file ...
  */
 #include "./user_main.h"
-
+#include "sockets.h"
 
 /*
  *  \brief Function declaration ...
@@ -54,7 +54,7 @@ const osThreadAttr_t TouchTask_attr = {
 
 const osThreadAttr_t FileTask_attr = {
   .name = "FileTask",
-  .stack_size = 1280,
+  .stack_size = 1280 * 2,
   .priority = (osPriority_t) osPriorityRealtime,
 };
 
@@ -69,16 +69,16 @@ const osThreadAttr_t FileTask_attr = {
  */
 void system_init(void)
 {
-    netTaskHandle = osThreadNew(iperf_thread, NULL, &NetTask_attr);
-    if (!netTaskHandle) {
-        for (;;){}
-    }
+//    netTaskHandle = osThreadNew(iperf_thread, NULL, &NetTask_attr);
+//    if (!netTaskHandle) {
+//        for (;;){}
+//    }
 
-    FileTaskHandle = osThreadNew(audio_thread, NULL, &FileTask_attr);
-    if (!FileTaskHandle) {
-        for (;;){}
-    }
-
+//    FileTaskHandle = osThreadNew(audio_thread, NULL, &FileTask_attr);
+//    if (!FileTaskHandle) {
+//        for (;;){}
+//    }
+//
     lvgl_thread_init();
 
     return;
@@ -126,13 +126,13 @@ void lvgl_thread(void *arg)
 {
 	lv_init();
 	lvgl_adapter_layer_init();
-//	lv_demo_benchmark();
+	lv_demo_benchmark();
 //	lv_demo_stress();
 //	lv_demo_widgets();
 
-#include "./Audio/gui_guider.h"
+    #include "./Audio/gui_guider.h"
 	static lv_ui audio_ui;
-	setup_ui(&audio_ui);
+//	setup_ui(&audio_ui);
 	for (;;)
 	{
 		lv_timer_handler();
@@ -141,107 +141,13 @@ void lvgl_thread(void *arg)
 }
 
 
-
-/*
- * Sdcard performance test
- */
-void sdcard_performance_thread(void *arg)
-{
-    FRESULT ret;
-    UINT    num;
-    uint8_t buf[32];
-
-    static volatile int start_time;
-    static volatile int end_time;
-    static volatile int final_value;
-    uint32_t *test_buffer;
-
-    test_buffer = (uint32_t *)0xC0000000;
-
-    ret = f_open(&SDFile, "example.txt", FA_READ);
-    start_time = HAL_GetTick();
-    if (ret == FR_OK) {
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_read(&SDFile, test_buffer, 1024*1024, &num);
-        if (ret != FR_OK) {
-            printf("\r\m Read Error!!!\r\n");
-        }
-        f_close(&SDFile);
-    }
-    end_time = HAL_GetTick();
-    final_value = end_time - start_time;
-    printf("********************************\r\n");
-    printf("* File Read Speed:%3.2fMB/s *\r\n", (double)(10.0 / (final_value / 1000.0)));
-    printf("********************************\r\n");
-
-    ret = f_open(&SDFile, "sample.txt", FA_CREATE_ALWAYS | FA_WRITE);
-    start_time = HAL_GetTick();
-    if (ret == FR_OK) {
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        ret |= f_write(&SDFile, test_buffer, 1024*1024, &num);
-        if (ret != FR_OK) {
-            printf("\r\m Write Error!!!\r\n");
-        }
-        f_close(&SDFile);
-    }
-    end_time = HAL_GetTick();
-    final_value = end_time - start_time;
-    printf("********************************\r\n");
-    printf("* File Write Speed:%3.2fMB/s *\r\n", (double)(10.0 / (final_value / 1000.0)));
-    printf("********************************\r\n");
-
-    for (;;) {
-        osDelay(5);
-    }
-    return;
-}
-
-
-/*
- * Sdram performance test
- */
-void sdram_speed_test()
-{
-	static volatile int start_time;
-	static volatile int end_time;
-	static volatile int final_value;
-	uint32_t *test_buffer;
-
-	test_buffer = (uint32_t *)0xC0000000;
-    start_time = HAL_GetTick();
-    memset(test_buffer, 0xA5A5, 1024*1024*32);
-    end_time = HAL_GetTick();
-    final_value = end_time - start_time;
-    printf("********************************\r\n");
-    printf("* SDRAM Write Speed:%3.2fMB/s *\r\n", (double)(32.0 / (final_value / 1000.0)));
-    printf("********************************\r\n");
-    return;
-}
-
-
 /*
  * Iperf thread
  */
 void iperf_thread(void *arg) {
     
-    int sct = 0; 
-    static int res = 0;
+    int sct;
+    static int res;
     struct sockaddr_in dst_ip ;
 
 //    lwiperf_example_init();
@@ -251,26 +157,29 @@ retry:
     {
         osDelay(20);
     }
-    sct = socket(AF_INET,SOCK_STREAM,0);
-    if(sct<0){    
+    sct = socket(AF_INET,SOCK_DGRAM,0);
+    if(sct < 0){
         close(sct);
     }
     dst_ip.sin_port = htons(6666);
     dst_ip.sin_family = AF_INET;
     dst_ip.sin_addr.s_addr = inet_addr("192.168.0.198");
-    res = connect(sct,(struct sockaddr*)&dst_ip, sizeof(struct sockaddr_in));
-    if (res < 0) {
-        closesocket(sct);
-        osDelay(500);
-        goto retry;
-    }
+    dst_ip.sin_len = sizeof(struct sockaddr_in);
+
+//    res = connect(sct,(struct sockaddr*)&dst_ip, sizeof(struct sockaddr_in));
+//    if (res < 0) {
+//        closesocket(sct);
+//        osDelay(500);
+//        goto retry;
+//    }
     for (;;) {
-        res = write(sct, (void *)0xC0000000, 10240);
+//        res = write(sct, (void *)0xC0000000, 102400);
+    	res = sendto(sct, (void *)0xC0000000, 60000, 0, (struct sockaddr*)&dst_ip, sizeof(struct sockaddr_in));
         if (res == -1) {
             closesocket(sct);
             goto retry;
         }
-        osDelay(5);
+        osDelay(1);
     }
     return;
 }
@@ -278,7 +187,6 @@ retry:
 
 void defualt_thread_entry(void)
 {
-
 //	int Device_Id = 0;
 //	extern SoftWareI2cStruct Ov2640_Instance;
 //    sdram_speed_test();
@@ -372,7 +280,7 @@ void MPU_Config(void)
      for LwIP RAM heap which contains the Tx buffers */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
   MPU_InitStruct.BaseAddress = 0x30044000;
-  MPU_InitStruct.Size = MPU_REGION_SIZE_32KB;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_16KB;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
   MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
@@ -400,17 +308,17 @@ void MPU_Config(void)
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
   /* QSPI-FLASH */
-  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-  MPU_InitStruct.BaseAddress = 0x90000000;
-  MPU_InitStruct.Size = MPU_REGION_SIZE_16MB;
-  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
-  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
-  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
-  MPU_InitStruct.Number = MPU_REGION_NUMBER5;
-  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
-  MPU_InitStruct.SubRegionDisable = 0x00;
-  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+//  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+//  MPU_InitStruct.BaseAddress = 0x90000000;
+//  MPU_InitStruct.Size = MPU_REGION_SIZE_16MB;
+//  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+//  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+//  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+//  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+//  MPU_InitStruct.Number = MPU_REGION_NUMBER5;
+//  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+//  MPU_InitStruct.SubRegionDisable = 0x00;
+//  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
 
 //  HAL_MPU_ConfigRegion(&MPU_InitStruct);
 

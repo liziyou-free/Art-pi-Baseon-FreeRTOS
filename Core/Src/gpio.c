@@ -80,6 +80,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIO_TOUCHSCREEN_INT_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PI3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);
+
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = GPIO_ETH_PHY_RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -121,8 +127,8 @@ void hardware_reset(void) {
     HAL_Delay(5);
     HAL_GPIO_WritePin(GPIO_TOUCHSCREEN_RST_GPIO_Port, GPIO_TOUCHSCREEN_RST_Pin, GPIO_PIN_SET);
     HAL_Delay(20);
-//
-//    /* Set as input to detect external interrupt signal */
+
+    /* Set as input to detect external interrupt signal */
 //    GPIO_InitStruct.Pin = GPIO_TOUCHSCREEN_INT_Pin;
 //    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
 //    GPIO_InitStruct.Pull = GPIO_NOPULL;

@@ -24,6 +24,7 @@
 #include "dma2d.h"
 #include "fatfs.h"
 #include "i2c.h"
+#include "i2s.h"
 #include "ltdc.h"
 #include "lwip.h"
 #include "sai.h"
@@ -125,6 +126,7 @@ int main(void)
   MX_I2C1_Init();
   MX_UART4_Init();
   MX_SAI1_Init();
+  MX_I2S2_Init();
   /* USER CODE BEGIN 2 */
   hardware_reset();
   system_init();
@@ -225,7 +227,16 @@ void PeriphCommonClock_Config(void)
 
   /** Initializes the peripherals clock
   */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1|RCC_PERIPHCLK_LTDC;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_FMC|RCC_PERIPHCLK_SAI1
+                              |RCC_PERIPHCLK_SPI2|RCC_PERIPHCLK_LTDC;
+  PeriphClkInitStruct.PLL2.PLL2M = 25;
+  PeriphClkInitStruct.PLL2.PLL2N = 240;
+  PeriphClkInitStruct.PLL2.PLL2P = 2;
+  PeriphClkInitStruct.PLL2.PLL2Q = 2;
+  PeriphClkInitStruct.PLL2.PLL2R = 1;
+  PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_0;
+  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
+  PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
   PeriphClkInitStruct.PLL3.PLL3M = 20;
   PeriphClkInitStruct.PLL3.PLL3N = 240;
   PeriphClkInitStruct.PLL3.PLL3P = 2;
@@ -234,7 +245,9 @@ void PeriphCommonClock_Config(void)
   PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_0;
   PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
   PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
+  PeriphClkInitStruct.FmcClockSelection = RCC_FMCCLKSOURCE_PLL2;
   PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL3;
+  PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL2;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -277,6 +290,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+      PRINTF_LINE("Error Handler ...");
+      osDelay(200);
   }
   /* USER CODE END Error_Handler_Debug */
 }

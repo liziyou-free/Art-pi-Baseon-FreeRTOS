@@ -413,6 +413,64 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
   return errval;
 }
 
+
+void ethernet_frame_send(struct netif *netif, struct pbuf *p)
+{
+	ETH_TxPacketConfig TxConfig;
+	uint32_t i = 0U;
+	struct pbuf *q = NULL;
+	err_t errval = ERR_OK;
+	ETH_BufferTypeDef Txbuffer[ETH_TX_DESC_CNT] = {0};
+
+	memset(Txbuffer, 0 , ETH_TX_DESC_CNT*sizeof(ETH_BufferTypeDef));
+
+	for(q = p; q != NULL; q = q->next)
+	{
+	if(i >= ETH_TX_DESC_CNT)
+	  return ERR_IF;
+
+	Txbuffer[i].buffer = q->payload;
+	Txbuffer[i].len = q->len;
+
+	if(i>0)
+	{
+	  Txbuffer[i-1].next = &Txbuffer[i];
+	}
+
+	if(q->next == NULL)
+	{
+	  Txbuffer[i].next = NULL;
+	}
+
+	i++;
+	}
+
+	TxConfig.Attributes = ETH_TX_PACKETS_FEATURES_CSUM | ETH_TX_PACKETS_FEATURES_CRCPAD;
+	TxConfig.ChecksumCtrl = ETH_CHECKSUM_IPHDR_PAYLOAD_INSERT_PHDR_CALC;
+	TxConfig.SrcAddrCtrl = ETH_SRC_ADDR_INSERT;
+	TxConfig.CRCPadCtrl = ETH_CRC_PAD_INSERT;
+	TxConfig.Length = p->tot_len;
+	TxConfig.TxBuffer = Txbuffer;
+	TxConfig.pData = p;
+
+	pbuf_ref(p);
+
+	if (HAL_ETH_Transmit_IT(&heth, &TxConfig) == HAL_OK) {
+	while(osSemaphoreAcquire(TxPktSemaphore, TIME_WAITING_FOR_INPUT)!=osOK)
+
+	{
+	}
+
+	HAL_ETH_ReleaseTxPacket(&heth);
+	} else {
+	pbuf_free(p);
+	}
+
+	return errval;
+}
+
+
+
 /**
  * @brief Should allocate a pbuf and transfer the bytes of the incoming
  * packet from the interface into the pbuf.

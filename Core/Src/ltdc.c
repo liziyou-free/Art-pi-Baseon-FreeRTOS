@@ -79,7 +79,8 @@ void MX_LTDC_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN LTDC_Init 2 */
-
+  __HAL_LTDC_DISABLE_IT(&hltdc, LTDC_IT_TE | LTDC_IT_FU | LTDC_IT_RR | LTDC_IT_RR);
+  HAL_LTDC_ProgramLineEvent(&hltdc, 480);
   /* USER CODE END LTDC_Init 2 */
 
 }

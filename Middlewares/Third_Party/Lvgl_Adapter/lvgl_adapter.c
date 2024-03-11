@@ -76,8 +76,9 @@ static void my_flush_cb(lv_disp_drv_t * disp_drv,
 
     if(lv_disp_flush_is_last(disp_drv)) {
         //SCB_CleanInvalidateDCache();
-        HAL_LTDC_Reload(&hltdc, LTDC_RELOAD_VERTICAL_BLANKING);
-        if (osMessageQueuePut(lcd_queue_id, &cur_addr, 1, osWaitForever) == osOK) {
+//        HAL_LTDC_Reload(&hltdc, LTDC_RELOAD_VERTICAL_BLANKING);
+        HAL_LTDC_ProgramLineEvent(&hltdc, 0);
+        if (osMessageQueuePut(lcd_queue_id, &cur_addr, 1, 0) == osOK) {
 //            lv_disp_flush_ready(disp_drv);
         }
 
@@ -103,36 +104,22 @@ static void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 }
 
 
-void HAL_LTDC_ReloadEventCallback(LTDC_HandleTypeDef *hltdc)
+//void HAL_LTDC_ReloadEventCallback(LTDC_HandleTypeDef *hltdc)
+void HAL_LTDC_LineEventCallback(LTDC_HandleTypeDef *hltdc)
 {
     uint32_t addr;
 
-    if (osMessageQueueGet(lcd_queue_id, &addr, NULL, 0) == osOK) {
-        HAL_LTDC_SetAddress(hltdc, (uint32_t)addr, LTDC_LAYER_1);
-        lv_disp_flush_ready(&disp_drv_obj);
+    if (osMessageQueueGet(lcd_queue_id, &addr, NULL, 0) != osOK) {
+    	addr = 0;
+    } else  {
+    	lv_disp_flush_ready(&disp_drv_obj);
     }
+
+    if (addr) {
+    	HAL_LTDC_SetAddress(hltdc, (uint32_t)addr, LTDC_LAYER_1);
+    }
+
+    __HAL_LTDC_ENABLE_IT(hltdc, LTDC_IT_LI);
+
+    return;
 }
-
-
-
-
-//extern void DMA2D_Copy(void * pSrc, void * pDst, uint32_t xSize, uint32_t ySize, \
-//                       uint32_t OffLineSrc, uint32_t OffLineDst, \
-//                       uint32_t PixelFormat);
-
-
-//static void my_flush_cb(lv_disp_drv_t * disp_drv,
-//                        const lv_area_t * area,
-//                        lv_color_t * color_p)
-//{
-//    SCB_CleanInvalidateDCache();
-//  DMA2D_Copy(color_p,
-//              (void *)(0xC0000000+((area->x1)*2)+((area->y1)*800*2)),
-//              (area->x2 - area->x1 + 1),
-//              (area->y2 - area->y1 + 1),
-//              0,
-//              800-(area->x2 - area->x1 + 1),
-//              LTDC_PIXEL_FORMAT_RGB565
-//              );
-//  lv_disp_flush_ready(disp_drv);
-//}

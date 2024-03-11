@@ -22,7 +22,7 @@
                                                p_buff0, \
                                                (uint32_t)&(SAI1_Block_A->DR), \
                                                p_buff1, \
-                                               len / 2)
+                                               len)
 
 
 static osMessageQueueId_t sai_queue_id;
@@ -79,9 +79,11 @@ void dump_wav_info(void *p_head, uint32_t *frq, uint8_t *bits, uint8_t *mode)
  * Audio player (only support WAV)
  ******************************************************************************/
 
+void audio_recorder (void *arg);
+
 void audio_thread(void *arg)
 {
-    const char *p_audio_file = "0:/audio.wav";
+    const char *p_audio_file = "0:/music/juhao.wav";    //"0:/music/Recorder.wav";
     uint8_t *p_dst;
     uint8_t  ret;
     uint8_t  retvul;
@@ -93,6 +95,10 @@ void audio_thread(void *arg)
     FIL      file;
     UINT     out;
 
+    file_system_mount();
+
+    audio_recorder(NULL);
+
     HAL_DMA_RegisterCallback(&hdma_sai1_a, HAL_DMA_XFER_CPLT_CB_ID, dma_TxCplt_m0);
     HAL_DMA_RegisterCallback(&hdma_sai1_a, HAL_DMA_XFER_M1CPLT_CB_ID, dma_TxCplt_m1);
 
@@ -103,8 +109,6 @@ void audio_thread(void *arg)
         PRINTF_LINE("File open fail!");
         for (;;);
     }
-
-    file_system_mount();
 
     ret = f_open(&file, p_audio_file, FA_READ);
     if (ret != FR_OK) {
@@ -120,7 +124,7 @@ void audio_thread(void *arg)
     f_read(&file, &audio_buffer1[0], FRAMWBUFFER_SIZE, &out);
 
     audio_protocol_cfg(sample_frq, audio_mode, sample_bits);
-    AUDIO_SEND((uint32_t)&audio_buffer0[0], (uint32_t)&audio_buffer1[0], out);
+    AUDIO_SEND((uint32_t)&audio_buffer0[0], (uint32_t)&audio_buffer1[0], out / 2);
     HAL_SAI_DMAResume(&hsai_BlockA1);
 
     volume = 20;
@@ -133,15 +137,6 @@ void audio_thread(void *arg)
             volume = msg;
         }
 
-        /* Read data from sd card to buffer */
-        ret = f_read(&file, p_dst, FRAMWBUFFER_SIZE, &out);
-        if (ret == FR_OK && out <= FRAMWBUFFER_SIZE) {
-            adjust_volume(p_dst, out, volume);
-        } else {
-            PRINTF_LINE("File Read failed!");
-            break;
-        }
-
         /* Get next buffer address */
         retvul = osMessageQueueGet(sai_queue_id, &msg, NULL, osWaitForever);
         if (retvul == osOK) {
@@ -151,7 +146,16 @@ void audio_thread(void *arg)
             break;
         }
 
-        osDelay(10);
+        /* Read data from sd card to buffer */
+        ret = f_read(&file, p_dst, FRAMWBUFFER_SIZE, &out);
+        if (ret == FR_OK && out <= FRAMWBUFFER_SIZE) {
+            adjust_volume(p_dst, out, volume);
+        } else {
+            PRINTF_LINE("File Read failed!");
+            break;
+        }
+
+        osDelay(5);
 
     } while(! f_eof(&file));
 
@@ -161,7 +165,10 @@ void audio_thread(void *arg)
     f_close(&file);
 
     for (;;) {
+
         /* never return */
+
+        osDelay(5);
     }
 }
 
@@ -253,3 +260,131 @@ void adjust_volume(uint8_t *scr, uint32_t size, int8_t angle){
         p_scr++;
     }
 }
+
+
+
+
+/*******************************************************************************
+ * Audio Recorder (only support WAV)
+ ******************************************************************************/
+
+
+#define FRAMWBUFFER_SIZE     10240
+
+#define AUDIO_RECEIVE(p_buff0, p_buff1, len)  HAL_DMAEx_MultiBufferStart_IT( \
+                                               &hdma_spi2_rx, \
+                                               p_buff0, \
+                                               (uint32_t)&(SPI2->RXDR), \
+                                               p_buff1, \
+                                               len)
+
+static osMessageQueueId_t i2s_queue_id;
+static const osMessageQueueAttr_t i2s_queue_attr = {.name = "i2s-semp"};
+
+static uint32_t i2s_rx_buffer0[FRAMWBUFFER_SIZE / 4];
+static uint32_t i2s_rx_buffer1[FRAMWBUFFER_SIZE / 4];
+
+extern I2S_HandleTypeDef hi2s2;
+extern DMA_HandleTypeDef hdma_spi2_rx;
+
+
+static void dma_RxCplt_m0(DMA_HandleTypeDef *_hdma)
+{
+    static uint32_t msg = (uint32_t)&i2s_rx_buffer0[0];
+    osMessageQueuePut(i2s_queue_id, &msg, 1, 0);
+}
+
+static void dma_RxCplt_m1(DMA_HandleTypeDef *_hdma)
+{
+    static uint32_t msg = (uint32_t)&i2s_rx_buffer1[0];
+    osMessageQueuePut(i2s_queue_id, &msg, 1, 0);
+}
+
+
+void audio_recorder (void *arg)
+{
+    const char *p_audio_file = "0:/music/Recorder.wav";
+    FIL       file;
+    UINT      out;
+    uint8_t   ret;
+    uint8_t  *p_dst;
+    uint32_t  msg;
+
+    wav_fmt_t fmt = {
+        .bit_rate = 192000,
+        .bitspersample = 24,
+        .block_align = 4,
+        .block_length = 1024,
+        .channel_count = 2,
+        .sample_rate = 48000,
+    };
+    wav_riff_t riff = {
+        .data_length = 1024 * 1024,
+    };
+
+    wav_data_t data = {
+        .VoiceData_Size = 1024 * 1024,
+    };
+
+    HAL_DMA_RegisterCallback(&hdma_spi2_rx, HAL_DMA_XFER_CPLT_CB_ID, dma_RxCplt_m0);
+    HAL_DMA_RegisterCallback(&hdma_spi2_rx, HAL_DMA_XFER_M1CPLT_CB_ID, dma_RxCplt_m1);
+
+    i2s_queue_id = osMessageQueueNew(1, 4, &i2s_queue_attr);
+
+    if (i2s_queue_id == NULL) {
+        PRINTF_LINE("File open fail!");
+        for (;;);
+    }
+
+    ret = f_open(&file, p_audio_file, FA_CREATE_ALWAYS | FA_WRITE);
+    if (ret != FR_OK) {
+        PRINTF_LINE("File open fail!");
+        for (;;);
+    }
+
+//    AUDIO_RECEIVE((uint32_t)i2s_rx_buffer0, (uint32_t)i2s_rx_buffer1, (FRAMWBUFFER_SIZE / 4));
+//    HAL_I2S_DMAPause(&hi2s2);
+
+    HAL_I2S_Receive(&hi2s2, i2s_rx_buffer0, FRAMWBUFFER_SIZE / 4, 500);
+
+    ret = f_write(&file, &riff, sizeof(riff), &out);
+    ret |= f_write(&file, &fmt, sizeof(fmt), &out);
+    ret |= f_write(&file, &data, sizeof(fmt), &out);
+    if (ret != FR_OK) {
+        PRINTF_LINE("Write to file fail!");
+        for (;;);
+    }
+
+    uint32_t cnt = 1000;
+
+    p_dst = i2s_rx_buffer0;
+
+    do {
+        /* Get next buffer address */
+        ret = osMessageQueueGet(i2s_queue_id, &msg, NULL, osWaitForever);
+        if (ret == osOK) {
+            p_dst = (uint8_t *)msg;
+        }
+
+        ret = f_write(&file, p_dst, (FRAMWBUFFER_SIZE / 4), &out);
+        if (ret != FR_OK) {
+            PRINTF_LINE("Write to file fail!");
+            break;
+        }
+
+        f_sync(&file);
+
+    } while(cnt--);
+
+    f_close(&file);
+
+    return;
+
+//    for (;;) osDelay(10);
+}
+
+
+
+
+
+
